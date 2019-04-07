@@ -1,0 +1,3 @@
+# BearNecessities
+
+**TODO: Add description**
