@@ -1,7 +1,10 @@
 defmodule BearNecessitiesWeb.PageController do
   use BearNecessitiesWeb, :controller
 
+  alias BearNecessitiesWeb.PageView
+  alias Phoenix.LiveView
+
   def index(conn, _params) do
-    render(conn, "index.html")
+    LiveView.Controller.live_render(conn, PageView, session: %{})
   end
 end
