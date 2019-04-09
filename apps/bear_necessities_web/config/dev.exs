@@ -58,4 +58,7 @@ config :bear_necessities_web, BearNecessitiesWeb.Endpoint,
       ~r"lib/bear_necessities_web/{live,views}/.*(ex)$",
       ~r"lib/bear_necessities_web/templates/.*(eex)$"
     ]
+  ],
+  live_view: [
+    signing_salt: "Z+5xU1Ed8BLzDuUjoyNwUsjVFef0dI+F"
   ]
