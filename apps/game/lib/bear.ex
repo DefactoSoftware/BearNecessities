@@ -9,6 +9,7 @@ defmodule Bear do
 
   def move(pid, action) do
     bear = Game.get_bear(pid)
+
     _move(bear, action)
   end
 
