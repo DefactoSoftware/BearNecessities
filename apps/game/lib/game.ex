@@ -45,6 +45,11 @@ defmodule Game do
     {:reply, bear, state}
   end
 
+  @impl true
+  def handle_call({:get_field, id}, _pid, %{field: field} = state) do
+    {:reply, field, state}
+  end
+
   def update_state_with(%{bears: bears} = state, bear = %Bear{}) do
     bears =
       Enum.map(bears, fn list_bear ->
@@ -62,6 +67,10 @@ defmodule Game do
 
   def get_bear(id) do
     GenServer.call(Game, {:get_bear, id})
+  end
+
+  def get_field(id) do
+    GenServer.call(Game, {:get_field, id})
   end
 
   defp view_elements({x, y}, bears) do

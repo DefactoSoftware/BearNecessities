@@ -10,17 +10,18 @@ defmodule BearNecessitiesWeb.Game do
 
   def mount(_session, %{id: id} = socket) do
     bear = Player.start("fatboypunk", id)
+    field = Game.get_field(id)
 
     socket =
       socket
       |> assign(:pos_x, bear.pos_x)
       |> assign(:pos_y, bear.pos_y)
+      |> assign(:field, field)
 
     {:ok, socket}
   end
 
   def handle_event(_, "Meta", socket) do
-    IO.inspect("hoi")
     {:noreply, socket}
   end
 
