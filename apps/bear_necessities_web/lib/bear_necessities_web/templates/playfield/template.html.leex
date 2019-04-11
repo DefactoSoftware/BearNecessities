@@ -1,0 +1,11 @@
+<div>
+  <button phx-click="left">left</button>
+  <button phx-click="down">down</button>
+  <button phx-click="up">up</button>
+  <button phx-click="right">right</button>
+  <div phx-keydown="key_move" phx-target="window"></div>
+  <div class="bear">
+    <h1>PosX <%= @pos_x %></h1>
+    <h1>PosY <%= @pos_y %></h1>
+  </div>
+</div>
