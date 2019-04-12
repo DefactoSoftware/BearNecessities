@@ -2,3 +2,42 @@
 
 @import "./phoenix.css";
 @import "../../../../deps/phoenix_live_view/assets/css/live_view.css";
+
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.square {
+  display: inline-block;
+  background: green;
+  border: 1px black dotted;
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.own-bear {
+  display: inline-block;
+  background: red;
+  border: 1px black dotted;
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.bear {
+  display: inline-block;
+  background: brown;
+  border: 1px black dotted;
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.tree {
+  display: inline-block;
+  background: lime;
+  border: 1px black dotted;
+  width: 2.5em;
+  height: 2.5em;
+}

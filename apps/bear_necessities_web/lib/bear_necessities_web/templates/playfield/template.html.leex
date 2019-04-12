@@ -1,3 +1,4 @@
+<% player_id = @id %>
 <%= if @bear.started do %>
   <div>
     <h1>Hello, <%= @bear.display_name %> </h1>
@@ -6,12 +7,30 @@
     <button phx-click="up">up</button>
     <button phx-click="right">right</button>
     <div phx-keydown="key_move" phx-target="window"></div>
-    <div class="bear">
-      <h1>PosX <%= @pos_x %></h1>
-      <h1>PosY <%= @pos_y %></h1>
+    <h1>PosX <%= @pos_x %></h1>
+    <h1>PosY <%= @pos_y %></h1>
+
+    <div>
+      <%= for y <- @viewport do %>
+        <div class="row">
+          <%= for x <- y do %>
+            <div class="<%= case x do
+            %Bear{id: id} when id == player_id -> "own-bear"
+            %Bear{}-> "bear"
+            %Tree{} -> "tree"
+            _ -> "square"
+            end
+            %> "
+            >
+
+
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </div>
-<%= end %>
+<% end %>
 
 <%= unless @bear.started |> IO.inspect do %>
   <div class="lobby">
