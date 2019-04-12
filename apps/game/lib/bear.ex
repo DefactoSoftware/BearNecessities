@@ -16,7 +16,7 @@ defmodule Bear do
   end
 
   @doc """
-  Tries to the bear a positon, up, left, down or right.
+  Tries to change the position of a bear , up, left, down or right.
   The game will decide if the action is permitted and returns the
   actual state of the bear.
   """

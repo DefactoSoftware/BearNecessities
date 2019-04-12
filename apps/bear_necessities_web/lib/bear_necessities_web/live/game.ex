@@ -17,7 +17,6 @@ defmodule BearNecessitiesWeb.Game do
       |> assign(:pos_y, nil)
       |> assign(:field, field)
       |> assign(:bear, %Bear{started: false})
-      |> IO.inspect()
 
     {:ok, socket}
   end
