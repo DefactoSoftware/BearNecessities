@@ -1,12 +1,25 @@
 defmodule Bear do
-  defstruct [:id, :pos_x, :pos_y, :honey, :display_name]
+  defstruct id: nil, pos_x: nil, pos_y: nil, honey: nil, display_name: nil, started: false
 
-  def create_bear(%{height: height, width: width}, id, display_name) do
+  def create_bear(%{height: height, width: width}, id, display_name, started) do
     pos_x = Enum.random(0..height)
     pos_y = Enum.random(0..width)
-    %Bear{id: id, pos_x: pos_x, pos_y: pos_y, honey: 10, display_name: display_name}
+
+    %Bear{
+      id: id,
+      pos_x: pos_x,
+      pos_y: pos_y,
+      honey: 10,
+      display_name: display_name,
+      started: started
+    }
   end
 
+  @doc """
+  Tries to the bear a positon, up, left, down or right.
+  The game will decide if the action is permitted and returns the
+  actual state of the bear.
+  """
   def move(id, action) do
     id
     |> Game.get_bear()

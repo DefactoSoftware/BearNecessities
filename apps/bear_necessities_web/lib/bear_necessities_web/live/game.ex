@@ -9,16 +9,31 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def mount(_session, %{id: id} = socket) do
-    bear = Player.start("fatboypunk", id)
     field = Game.get_field(id)
 
     socket =
       socket
-      |> assign(:pos_x, bear.pos_x)
-      |> assign(:pos_y, bear.pos_y)
+      |> assign(:pos_x, nil)
+      |> assign(:pos_y, nil)
       |> assign(:field, field)
+      |> assign(:bear, %Bear{started: false})
+      |> IO.inspect()
 
     {:ok, socket}
+  end
+
+  def handle_event("start", %{"display_name" => display_name}, %{id: id} = socket) do
+    bear =
+      Player.start(display_name, id)
+      |> IO.inspect()
+
+    socket =
+      socket
+      |> update(:pos_x, fn _ -> bear.pos_x end)
+      |> update(:pos_y, fn _ -> bear.pos_y end)
+      |> update(:bear, fn _ -> bear end)
+
+    {:noreply, socket}
   end
 
   def handle_event(_, "Meta", socket) do
@@ -26,9 +41,6 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def handle_event("key_move", key, %{id: id} = socket) do
-    key
-    |> IO.inspect(label: "key")
-
     bear = Player.move(id, move_to(key))
 
     socket =

@@ -1,15 +1,29 @@
-<div>
-  <button phx-click="left">left</button>
-  <button phx-click="down">down</button>
-  <button phx-click="up">up</button>
-  <button phx-click="right">right</button>
-  <div phx-keydown="key_move" phx-target="window"></div>
-  <div class="bear">
-    <h1>PosX <%= @pos_x %></h1>
-    <h1>PosY <%= @pos_y %></h1>
+<%= if @bear.started do %>
+  <div>
+    <h1>Hello, <%= @bear.display_name %> </h1>
+    <button phx-click="left">left</button>
+    <button phx-click="down">down</button>
+    <button phx-click="up">up</button>
+    <button phx-click="right">right</button>
+    <div phx-keydown="key_move" phx-target="window"></div>
+    <div class="bear">
+      <h1>PosX <%= @pos_x %></h1>
+      <h1>PosY <%= @pos_y %></h1>
+    </div>
   </div>
-  <div class="field">
-    <p>Field width <%= @field.width %></p>
-    <p>Field height <%= @field.height %></p>
+<%= end %>
+
+<%= unless @bear.started |> IO.inspect do %>
+  <div class="lobby">
+    <%= form_tag "#", [phx_submit: :start] do %>
+
+      <%= tag(:label, name:  :display_name)  %>
+      <%= tag(:input, type: "text", name: "display_name")%>
+
+      <div>
+
+      <%= submit "Start", phx_disable_with: "Starting..." %>
+      </div>
+    <% end %>
   </div>
-</div>
+<% end %>

@@ -15,9 +15,13 @@ defmodule Game do
   end
 
   @impl true
-  def handle_call({:create_bear, display_name: display_name, id: id}, _pid, state) do
+  def handle_call(
+        {:create_bear, [display_name: display_name, id: id, started: started]},
+        _pid,
+        state
+      ) do
     field = Map.get(state, :field)
-    bear = Bear.create_bear(field, id, display_name)
+    bear = Bear.create_bear(field, id, display_name, started)
     {:reply, bear, %{state | bears: [bear | Map.get(state, :bears)]}}
   end
 
@@ -97,8 +101,8 @@ defmodule Game do
     pos_x > 0 and pos_y > 0 and pos_x < height and pos_y < width
   end
 
-  def create_bear(display_name: display_name, id: id) do
-    GenServer.call(Game, {:create_bear, display_name: display_name, id: id})
+  def create_bear(display_name: display_name, id: id, started: started) do
+    GenServer.call(Game, {:create_bear, display_name: display_name, id: id, started: started})
   end
 
   def handle_info(pid, state) do

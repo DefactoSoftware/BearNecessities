@@ -33,6 +33,6 @@ defmodule Player do
 
   def start(display_name, id) do
     Player.start_link([])
-    Game.create_bear(display_name: display_name, id: id)
+    Game.create_bear(display_name: display_name, id: id, started: true)
   end
 end
