@@ -7,8 +7,8 @@ defmodule Bear do
 
     %Bear{
       id: id,
-      pos_x: pos_x,
-      pos_y: pos_y,
+      pos_x: 5,
+      pos_y: 5,
       honey: 10,
       display_name: display_name,
       started: started
@@ -26,8 +26,8 @@ defmodule Bear do
     |> _move(action)
   end
 
-  defp _move(bear, :up), do: Game.move(bear, to: {bear.pos_x + 1, bear.pos_y})
-  defp _move(bear, :down), do: Game.move(bear, to: {bear.pos_x - 1, bear.pos_y})
+  defp _move(bear, :down), do: Game.move(bear, to: {bear.pos_x + 1, bear.pos_y})
+  defp _move(bear, :up), do: Game.move(bear, to: {bear.pos_x - 1, bear.pos_y})
   defp _move(bear, :left), do: Game.move(bear, to: {bear.pos_x, bear.pos_y - 1})
   defp _move(bear, :right), do: Game.move(bear, to: {bear.pos_x, bear.pos_y + 1})
 
