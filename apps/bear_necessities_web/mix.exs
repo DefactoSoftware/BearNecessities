@@ -40,6 +40,7 @@ defmodule BearNecessitiesWeb.MixProject do
       {:bear_necessities, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
+      {:game, in_umbrella: true},
       {:phoenix, "~> 1.4.3"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
