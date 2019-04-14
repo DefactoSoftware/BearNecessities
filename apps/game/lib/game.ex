@@ -148,7 +148,13 @@ defmodule Game do
     |> Task.await()
   end
 
-  def create_viewport({bear_x, bear_y} = position, %{bears: bears, trees: trees}) do
+  def item_from_list({row, column}, list) do
+    list
+    |> Enum.filter(fn %{pos_x: x, pos_y: y} = item -> x == row and y == column end)
+    |> List.last()
+  end
+
+  def create_viewport({bear_x, bear_y} = position, %{field: field, bears: bears, trees: trees}) do
     list = get_from_list(position, bears) ++ get_from_list(position, trees)
 
     Enum.reduce(
@@ -164,9 +170,11 @@ defmodule Game do
             fn column, inner ->
               inner ++
                 [
-                  list
-                  |> Enum.filter(fn %{pos_x: x, pos_y: y} = item -> x == row and y == column end)
-                  |> List.last() || :grass
+                  cond do
+                    not is_nil(item = item_from_list({row, column}, list)) -> item
+                    pos_within_field?({row, column}, field) -> :grass
+                    true -> :nothing
+                  end
                 ]
             end
           )

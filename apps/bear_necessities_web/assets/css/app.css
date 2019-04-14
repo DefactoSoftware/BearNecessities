@@ -12,10 +12,19 @@
 
 .square {
   display: inline-block;
-  background: url(/images/grass.gif) no-repeat center center;
-  background-size: 2.5em;
   width: 2.5em;
   height: 2.5em;
+}
+
+.grass {
+  background: url(/images/grass.gif) no-repeat center center;
+  background-size: 2.5em;
+}
+
+.nothing {
+  background-size: 2.5em;
+  background-color: black !important;
+  background-image: none;
 }
 
 
@@ -52,3 +61,4 @@
   width: 2.5em;
   height: 2.5em;
 }
+
