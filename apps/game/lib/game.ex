@@ -44,11 +44,15 @@ defmodule Game do
   end
 
   @impl true
-  def handle_call({:move, %Bear{id: id} = bear, [to: {pos_x, pos_y} = position]}, _pid, state) do
+  def handle_call(
+        {:move, %Bear{id: id} = bear, direction, [to: {pos_x, pos_y} = position]},
+        _pid,
+        state
+      ) do
     bear =
       if move_to?(position, id, state),
-        do: %{bear | pos_x: pos_x, pos_y: pos_y},
-        else: bear
+        do: %{bear | pos_x: pos_x, pos_y: pos_y, direction: direction},
+        else: %{bear | direction: direction}
 
     state = update_state_with(state, bear)
 
@@ -84,8 +88,8 @@ defmodule Game do
     %{state | bears: bears}
   end
 
-  def move(bear, position) do
-    GenServer.call(Game, {:move, bear, position})
+  def move(bear, direction, position) do
+    GenServer.call(Game, {:move, bear, direction, position})
   end
 
   def get_bear(id) do

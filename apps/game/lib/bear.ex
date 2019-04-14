@@ -1,5 +1,11 @@
 defmodule Bear do
-  defstruct id: nil, pos_x: nil, pos_y: nil, honey: nil, display_name: nil, started: false
+  defstruct id: nil,
+            pos_x: nil,
+            pos_y: nil,
+            honey: nil,
+            display_name: nil,
+            started: false,
+            direction: :down
 
   def create_bear(%{height: height, width: width}, id, display_name, started) do
     pos_x = Enum.random(0..height)
@@ -26,10 +32,10 @@ defmodule Bear do
     |> _move(action)
   end
 
-  defp _move(bear, :down), do: Game.move(bear, to: {bear.pos_x + 1, bear.pos_y})
-  defp _move(bear, :up), do: Game.move(bear, to: {bear.pos_x - 1, bear.pos_y})
-  defp _move(bear, :left), do: Game.move(bear, to: {bear.pos_x, bear.pos_y - 1})
-  defp _move(bear, :right), do: Game.move(bear, to: {bear.pos_x, bear.pos_y + 1})
+  defp _move(bear, :down), do: Game.move(bear, :down, to: {bear.pos_x + 1, bear.pos_y})
+  defp _move(bear, :up), do: Game.move(bear, :up, to: {bear.pos_x - 1, bear.pos_y})
+  defp _move(bear, :left), do: Game.move(bear, :left, to: {bear.pos_x, bear.pos_y - 1})
+  defp _move(bear, :right), do: Game.move(bear, :right, to: {bear.pos_x, bear.pos_y + 1})
 
   def claw(bear) do
     Game.claw(bear)
