@@ -25,7 +25,7 @@ defmodule BearNecessitiesWeb.Game do
 
   def handle_event("start", %{"display_name" => display_name}, %{id: id} = socket) do
     if connected?(socket), do: :timer.send_interval(50, self(), :update_viewport)
-    if connected?(socket), do: :timer.send_interval(15000, self(), :remove_disconnected_bears)
+    if connected?(socket), do: :timer.send_interval(1000, self(), :remove_disconnected_bears)
     bear = Player.start(display_name, id)
     viewport = ViewPort.get_viewport(id)
 
