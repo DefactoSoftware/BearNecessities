@@ -13,6 +13,8 @@ defmodule BearNecessitiesWeb.Game do
 
     socket =
       socket
+      |> assign(:id, id)
+      |> assign(:viewport, [])
       |> assign(:pos_x, nil)
       |> assign(:pos_y, nil)
       |> assign(:field, field)
@@ -22,12 +24,13 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def handle_event("start", %{"display_name" => display_name}, %{id: id} = socket) do
-    bear =
-      Player.start(display_name, id)
-      |> IO.inspect()
+    bear = Player.start(display_name, id)
+    viewport = ViewPort.get_viewport(id)
 
     socket =
       socket
+      |> update(:id, fn _ -> id end)
+      |> update(:viewport, fn _ -> viewport end)
       |> update(:pos_x, fn _ -> bear.pos_x end)
       |> update(:pos_y, fn _ -> bear.pos_y end)
       |> update(:bear, fn _ -> bear end)
@@ -42,10 +45,13 @@ defmodule BearNecessitiesWeb.Game do
   def handle_event("key_move", key, %{id: id} = socket) do
     bear = Player.move(id, move_to(key))
 
+    viewport = ViewPort.get_viewport(id)
+
     socket =
       socket
       |> update(:pos_x, fn _ -> bear.pos_x end)
       |> update(:pos_y, fn _ -> bear.pos_y end)
+      |> update(:viewport, fn _ -> viewport end)
 
     {:noreply, socket}
   end

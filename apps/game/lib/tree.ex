@@ -1,3 +1,3 @@
 defmodule Tree do
-  defstruct [:position]
+  defstruct pos_x: nil, pos_y: nil, honey: nil
 end
