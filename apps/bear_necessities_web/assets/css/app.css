@@ -12,24 +12,35 @@
 
 .square {
   display: inline-block;
-  background: green;
-  border: 1px black dotted;
+  background: url(/images/grass.gif) no-repeat center center;
+  background-size: 2.5em;
   width: 2.5em;
   height: 2.5em;
+}
+
+
+.up{
+  background: url(/images/up.gif) no-repeat center center;
+}
+.left{
+  background: url(/images/left.gif) no-repeat center center;
+}
+.right{
+  background: url(/images/right.gif) no-repeat center center;
+}
+.down{
+  background: url(/images/down.gif) no-repeat center center;
 }
 
 .own-bear {
   display: inline-block;
-  background: red;
-  border: 1px black dotted;
   width: 2.5em;
   height: 2.5em;
+  background-size: cover;
 }
-
 .bear {
   display: inline-block;
   background: brown;
-  border: 1px black dotted;
   width: 2.5em;
   height: 2.5em;
 }

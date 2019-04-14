@@ -26,7 +26,7 @@ defmodule Game do
         _pid,
         %{bears: bears} = state
       ) do
-    %{pos_x: x, pos_y: y} = get_bear_without_call(id, bears)
+    %{pos_x: x, pos_y: y} = get_bear_from_list(id, bears)
     position = {x, y}
     viewport = create_viewport(position, state)
     {:reply, viewport, state}
@@ -44,11 +44,15 @@ defmodule Game do
   end
 
   @impl true
-  def handle_call({:move, %Bear{id: id} = bear, [to: {pos_x, pos_y} = position]}, _pid, state) do
+  def handle_call(
+        {:move, %Bear{id: id} = bear, direction, [to: {pos_x, pos_y} = position]},
+        _pid,
+        state
+      ) do
     bear =
       if move_to?(position, id, state),
-        do: %{bear | pos_x: pos_x, pos_y: pos_y},
-        else: bear
+        do: %{bear | pos_x: pos_x, pos_y: pos_y, direction: direction},
+        else: %{bear | direction: direction}
 
     state = update_state_with(state, bear)
 
@@ -57,19 +61,20 @@ defmodule Game do
 
   @impl true
   def handle_call({:get_bear, id}, _pid, %{bears: bears} = state) do
-    bear =
-      bears
-      |> Enum.filter(fn bear ->
-        bear.id == id
-      end)
-      |> List.last()
-
+    bear = get_bear_from_list(id, bears)
     {:reply, bear, state}
   end
 
   @impl true
   def handle_call({:get_field, id}, _pid, %{field: field} = state) do
     {:reply, field, state}
+  end
+
+  @impl true
+  def handle_cast({:remove_bear, id}, %{bears: bears} = state) do
+    bears = Enum.reject(bears, &(&1 == id))
+
+    {:noreply, %{state | bears: bears}}
   end
 
   def update_state_with(%{bears: bears} = state, bear = %Bear{}) do
@@ -83,15 +88,15 @@ defmodule Game do
     %{state | bears: bears}
   end
 
-  def move(bear, position) do
-    GenServer.call(Game, {:move, bear, position})
+  def move(bear, direction, position) do
+    GenServer.call(Game, {:move, bear, direction, position})
   end
 
   def get_bear(id) do
     GenServer.call(Game, {:get_bear, id})
   end
 
-  defp get_bear_without_call(id, bears) do
+  defp get_bear_from_list(id, bears) do
     bears
     |> Enum.filter(fn bear ->
       bear.id == id
@@ -168,6 +173,13 @@ defmodule Game do
         )
       end
     )
+  end
+
+  @doc """
+  This will remove the bear from the game, only use this when player is disconnected. It is a cast and will not return return anything.
+  """
+  def remove_bear(id) do
+    GenServer.cast(Game, {:remove_bear, id})
   end
 
   def handle_info(pid, state) do
