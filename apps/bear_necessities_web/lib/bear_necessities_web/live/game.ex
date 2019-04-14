@@ -25,8 +25,8 @@ defmodule BearNecessitiesWeb.Game do
 
   def handle_event("start", %{"display_name" => display_name}, %{id: id} = socket) do
     if connected?(socket), do: :timer.send_interval(50, self(), :update_viewport)
-    if connected?(socket), do: :timer.send_interval(1000, self(), :remove_disconnected_bears)
     bear = Player.start(display_name, id)
+
     viewport = ViewPort.get_viewport(id)
 
     socket =
@@ -64,13 +64,10 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, assign(socket, :viewport, viewport)}
   end
 
-  def handle_info(:remove_disconnected_bears, %{id: id} = socket) do
-    unless connected?(socket) do
-      Game.remove_bear(id)
-      socket = assign(socket, :bear, %Bear{started: false})
-    end
+  def terminate(reason, %{id: id} = socket) do
+    Game.remove_bear(id)
 
-    {:noreply, socket}
+    reason
   end
 
   def move_to("ArrowRight"), do: :right_arrow
