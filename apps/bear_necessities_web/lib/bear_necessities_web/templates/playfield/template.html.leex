@@ -32,7 +32,7 @@
   </div>
 <% end %>
 
-<%= unless @bear.started |> IO.inspect do %>
+<%= unless @bear.started do %>
   <div class="lobby">
     <%= form_tag "#", [phx_submit: :start] do %>
 
