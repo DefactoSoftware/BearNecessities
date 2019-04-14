@@ -64,9 +64,10 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, assign(socket, :viewport, viewport)}
   end
 
-  def terminate(_reason, %{id: id} = socket) do
+  def terminate(reason, %{id: id} = socket) do
     Game.remove_bear(id)
-    socket = assign(socket, :bear, %Bear{started: false})
+
+    reason
   end
 
   def move_to("ArrowRight"), do: :right_arrow
