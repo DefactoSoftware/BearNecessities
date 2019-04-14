@@ -24,6 +24,7 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def handle_event("start", %{"display_name" => display_name}, %{id: id} = socket) do
+    if connected?(socket), do: :timer.send_interval(50, self(), :update_viewport)
     bear = Player.start(display_name, id)
     viewport = ViewPort.get_viewport(id)
 
@@ -54,6 +55,12 @@ defmodule BearNecessitiesWeb.Game do
       |> update(:viewport, fn _ -> viewport end)
 
     {:noreply, socket}
+  end
+
+  def handle_info(:update_viewport, %{id: id} = socket) do
+    viewport = ViewPort.get_viewport(id)
+
+    {:noreply, assign(socket, :viewport, viewport)}
   end
 
   def move_to("ArrowRight"), do: :right_arrow
