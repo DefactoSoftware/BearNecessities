@@ -72,7 +72,7 @@ defmodule Game do
 
   @impl true
   def handle_cast({:remove_bear, id}, %{bears: bears} = state) do
-    bears = Enum.reject(bears, &(&1 == id))
+    bears = Enum.reject(bears, &(&1.id == id))
 
     {:noreply, %{state | bears: bears}}
   end
