@@ -5,9 +5,9 @@
 @import "./game/game.css";
 
 body {
-  /* background: black; */
-  /* color: white; */
+  background: black;
+  color: white;
   font-family: "Press Start 2P", Courier, monospace;
   margin: 30px;
-  font-size: 18px;
+  font-size: 16px;
 }

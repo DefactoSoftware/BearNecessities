@@ -1,7 +1,3 @@
-<%
-player_id = @id
-%>
-
 <%= if @bear.started do %>
 
   <div>
@@ -17,19 +13,11 @@ player_id = @id
     </div>
 
     <div class="map">
-      <%= for y <- @viewport do %>
+      <%= for row <- @viewport do %>
         <div class="row">
-          <%= for x <- y do %>
-            <div class="tile <%= if x == :nothing, do: "nothing", else: "grass" %> ">
-              <div class="sprite <%= case x do
-                  %Bear{id: id, direction: direction} when id == player_id -> "bear self #{direction}"
-                  %Bear{}-> "bear opponent"
-                  %Tree{} -> "tree"
-                  :nothing -> "nothing"
-                  _ -> "grass"
-                end
-              %>">
-              </div>
+          <%= for tile <- row do %>
+            <div class="tile <%= terrain_class(tile) %> ">
+              <div class="sprite <%= sprite_class(tile, @id) %>"></div>
             </div>
           <% end %>
         </div>
