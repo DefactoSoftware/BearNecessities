@@ -16,7 +16,9 @@ defmodule Game do
        field: %Field{height: 11, width: 11},
        bears: [],
        bees: [],
-       trees: [%Tree{pos_x: 4, pos_y: 4}]
+       trees: [
+         %Tree{pos_x: 4, pos_y: 4}
+       ]
      }}
   end
 
@@ -141,8 +143,7 @@ defmodule Game do
       Enum.filter(list, fn %{pos_x: pos_x, pos_y: pos_y} ->
         pos_x <= item_x + @horizontal_view_distance and
           pos_x >= item_x - @horizontal_view_distance and
-          pos_y <= item_y + @vertical_view_distance and
-          pos_y >= item_y - @vertical_view_distance
+          pos_y <= item_y + @vertical_view_distance and pos_y >= item_y - @vertical_view_distance
       end)
     end)
     |> Task.await()
