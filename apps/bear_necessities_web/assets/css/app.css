@@ -4,6 +4,7 @@
 
 @import "./form.css";
 @import "./game/lobby.css";
+@import "./game/scoreboard.css";
 @import "./game/game.css";
 
 body {

@@ -1,0 +1,14 @@
+<div class="scoreboard">
+  <h1>Contending players</h1>
+
+  <%= if Enum.any? @players do %>
+    <ul class="players">
+      <%= for player <- @players do %>
+        <li class="player <%= if player.id == @id, do: "self", else: nil %>">
+          <%= player.display_name %> - <%= player.honey %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+</div>

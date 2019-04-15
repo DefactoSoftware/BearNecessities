@@ -12,6 +12,7 @@ defmodule BearNecessitiesWeb.Game do
 
   def mount(_session, %{id: id} = socket) do
     field = Game.get_field(id)
+    players = Game.get_players()
 
     socket =
       socket
@@ -20,13 +21,15 @@ defmodule BearNecessitiesWeb.Game do
       |> assign(:pos_x, nil)
       |> assign(:pos_y, nil)
       |> assign(:field, field)
+      |> assign(:players, players)
       |> assign(:bear, %Bear{started: false})
 
     {:ok, socket}
   end
 
   def handle_event("start", %{"player" => %{"display_name" => display_name}}, %{id: id} = socket) do
-    if connected?(socket), do: :timer.send_interval(50, self(), :update_viewport)
+    if connected?(socket), do: :timer.send_interval(50, self(), :update)
+
     bear = Player.start(display_name, id)
     viewport = ViewPort.get_viewport(id)
 
@@ -64,10 +67,16 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
-  def handle_info(:update_viewport, %{id: id} = socket) do
+  def handle_info(:update, %{id: id} = socket) do
+    players = Game.get_players()
     viewport = ViewPort.get_viewport(id)
 
-    {:noreply, assign(socket, :viewport, viewport)}
+    socket =
+      socket
+      |> assign(:viewport, viewport)
+      |> assign(:players, players)
+
+    {:noreply, socket}
   end
 
   def terminate(reason, %{id: id} = socket) do
