@@ -1,0 +1,71 @@
+.gui {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.map {
+  display: flex;
+  flex-direction: column;
+  width: 800px;
+  height: 800px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  justify-content: space-evenly;
+  flex: 1;
+}
+
+/* Tiles of map (terain, border) */
+.tile {
+  background-size: cover;
+  image-rendering: pixelated;
+  height: 100%;
+  width: 25%; /* Make this variable? */
+}
+.tile.grass {
+  background-color: #44d873;
+  background-image: url("/images/grass.gif");
+}
+.tile.nothing {
+  background: gray;
+}
+
+/*
+Sprites that are displayed inside tiles (bears, trees, etc)
+*/
+.sprite {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  height: 100%;
+  width: 100%;
+}
+
+/* Bear (player and opponents) */
+.bear.self {
+}
+.bear.opponent {
+  background: brown;
+}
+.bear.up {
+  background-image: url("/images/up.gif");
+}
+.bear.left {
+  background-image: url("/images/left.gif");
+}
+.bear.right {
+  background-image: url("/images/right.gif");
+}
+.bear.down {
+  background-image: url("/images/down.gif");
+}
+
+.tree {
+  background: lime;
+}

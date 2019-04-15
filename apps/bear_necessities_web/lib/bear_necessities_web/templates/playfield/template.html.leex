@@ -1,48 +1,44 @@
-<% player_id = @id %>
 <%= if @bear.started do %>
-  <div>
-    <h1>Hello, <%= @bear.display_name %> </h1>
-    <button phx-click="left">left</button>
-    <button phx-click="down">down</button>
-    <button phx-click="up">up</button>
-    <button phx-click="right">right</button>
-    <div phx-keydown="key_move" phx-target="window"></div>
-    <h1>PosX <%= @pos_x %></h1>
-    <h1>PosY <%= @pos_y %></h1>
 
-    <div>
-      <%= for y <- @viewport do %>
+  <div>
+    <div class="gui">
+      <h1>Hello, <%= @bear.display_name %></h1>
+      <span>X: <%= @pos_x %></span>
+      <span>Y: <%= @pos_y %></span>
+      <button phx-click="left" class="button small">left</button>
+      <button phx-click="down" class="button small">down</button>
+      <button phx-click="up" class="button small">up</button>
+      <button phx-click="right" class="button small">right</button>
+      <span phx-keydown="key_move" phx-target="window"></span>
+    </div>
+
+    <div class="map">
+      <%= for row <- @viewport do %>
         <div class="row">
-          <%= for x <- y do %>
-            <div class="square <%= if x == :nothing, do: "nothing", else: "grass" %> ">
-            <div class="<%= case x do
-                %Bear{id: id, direction: direction} when id == player_id -> "own-bear #{direction}"
-                %Bear{}-> "bear"
-                %Tree{} -> "tree"
-                :nothing -> "nothing"
-                _ -> "grass"
-              end
-            %>" >
-            </div>
+          <%= for tile <- row do %>
+            <div class="tile <%= terrain_class(tile) %> ">
+              <div class="sprite <%= sprite_class(tile, @id) %>"></div>
             </div>
           <% end %>
         </div>
       <% end %>
     </div>
   </div>
-<% end %>
 
-<%= unless @bear.started do %>
+<% else %>
+
   <div class="lobby">
+    <h1>Bear<br>Necessities</h1>
+
+    <img src="/images/down.gif" class="player">
+
     <%= form_tag "#", [phx_submit: :start] do %>
+      <%= label(:player, :display_name, "What is Your Name?") %>
+      <br><br><br>
+      <%= text_input(:player, :display_name, value: "Player1", class: "input") %>
 
-      <%= tag(:label, name:  :display_name)  %>
-      <%= tag(:input, type: "text", name: "display_name")%>
-
-      <div>
-
-      <%= submit "Start", phx_disable_with: "Starting..." %>
-      </div>
+      <%= submit("Start", phx_disable_with: "Starting...", class: "button red") %>
     <% end %>
   </div>
+
 <% end %>
