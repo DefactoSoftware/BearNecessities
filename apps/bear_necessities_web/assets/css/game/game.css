@@ -25,14 +25,15 @@
   background-size: cover;
   image-rendering: pixelated;
   height: 100%;
-  width: 25%; /* Make this variable? */
+  flex: 1;
 }
 .tile.grass {
   background-color: #44d873;
-  background-image: url("/images/grass.gif");
+  background-image: url("/images/terain/grass.gif");
 }
 .tile.nothing {
-  background: gray;
+  background-color: gray;
+  background-image: url("/images/terain/nothing.gif");
 }
 
 /*
@@ -54,16 +55,16 @@ Sprites that are displayed inside tiles (bears, trees, etc)
   background: brown;
 }
 .bear.up {
-  background-image: url("/images/up.gif");
+  background-image: url("/images/bear/up.gif");
 }
 .bear.left {
-  background-image: url("/images/left.gif");
+  background-image: url("/images/bear/left.gif");
 }
 .bear.right {
-  background-image: url("/images/right.gif");
+  background-image: url("/images/bear/right.gif");
 }
 .bear.down {
-  background-image: url("/images/down.gif");
+  background-image: url("/images/bear/down.gif");
 }
 
 .tree {
