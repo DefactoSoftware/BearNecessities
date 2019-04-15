@@ -1,0 +1,21 @@
+.lobby {
+  background: #44d873 url("/images/grass.gif");
+  color: white;
+  text-align: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  image-rendering: pixelated;
+  background-size: 20%;
+  padding: 30px;
+}
+
+.lobby h1 {
+  font-size: 3em;
+}
+
+.lobby .player {
+  width: 200px;
+}

@@ -28,13 +28,16 @@
 <% else %>
 
   <div class="lobby">
-    <%= form_tag "#", [phx_submit: :start] do %>
-      <%= tag(:label, name:  :display_name)  %>
-      <%= tag(:input, type: "text", name: "display_name", value: "Player")%>
+    <h1>Bear<br>Necessities</h1>
 
-      <div>
-        <%= submit "Start", phx_disable_with: "Starting..." %>
-      </div>
+    <img src="/images/down.gif" class="player">
+
+    <%= form_tag "#", [phx_submit: :start] do %>
+      <%= label(:player, :display_name, "What is Your Name?") %>
+      <br><br><br>
+      <%= text_input(:player, :display_name, value: "Player1", class: "input") %>
+
+      <%= submit("Start", phx_disable_with: "Starting...", class: "button red") %>
     <% end %>
   </div>
 
