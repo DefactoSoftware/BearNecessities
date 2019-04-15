@@ -17,8 +17,7 @@ defmodule BearNecessitiesWeb.Router do
   scope "/", BearNecessitiesWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
-    live "/game", Game
+    live "/", Game
   end
 
   # Other scopes may use custom stacks.
