@@ -1,0 +1,69 @@
+game {
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+debug {
+  left: 15px;
+  position: absolute;
+  top: 15px;
+  z-index: 10;
+}
+
+controls {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  z-index: 10;
+}
+
+body {
+  /* background: red; */
+  /* margin: 50vh 0 0 50vw; */
+}
+
+world {
+  background: red;
+  /* margin: 50vh 0 0 50vw; */
+  /* bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  overflow: hidden;
+  z-index: 5; */
+  position: relative;
+}
+
+map {
+  background-color: green;
+  background-image: url("/images/grass.gif");
+  background-repeat: repeat;
+  background-size: 128px;
+  image-rendering: pixelated;
+  position: absolute;
+  /* width: 100000px;
+  height: 100000px; */
+  width: 1000px;
+  height: 1000px;
+  /* left: 50%; */
+  /* top: 50%; */
+  /* transform: translate(-50%, -50%); */
+  /* transform-origin: center; */
+  /* transition: bottom 100ms, right 100ms; */
+}
+
+bear {
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  width: 32px;
+  height: 32px;
+  transform: scale(4) translate(-50%, -50%);
+  transform-origin: center;
+  image-rendering: pixelated;
+  background-image: url("/images/bear-front.gif");
+}

@@ -1,7 +1,13 @@
-/* This file is for your main application css. */
+@import url("https://fonts.googleapis.com/css?family=Press+Start+2P");
 
-@import "./phoenix.css";
 @import "../../../../deps/phoenix_live_view/assets/css/live_view.css";
+
+/* @import "./game/game.css"; */
+
+body {
+  font-family: "Press Start 2P", Courier, monospace;
+  margin: 0;
+}
 
 .row {
   display: flex;
@@ -17,7 +23,7 @@
 }
 
 .grass {
-  background: url(/images/grass.gif) no-repeat center center;
+  background: url("/images/grass.gif") no-repeat center center;
   background-size: 2.5em;
 }
 
@@ -27,17 +33,16 @@
   background-image: none;
 }
 
-
-.up{
+.up {
   background: url(/images/up.gif) no-repeat center center;
 }
-.left{
+.left {
   background: url(/images/left.gif) no-repeat center center;
 }
-.right{
+.right {
   background: url(/images/right.gif) no-repeat center center;
 }
-.down{
+.down {
   background: url(/images/down.gif) no-repeat center center;
 }
 
@@ -61,4 +66,3 @@
   width: 2.5em;
   height: 2.5em;
 }
-
