@@ -2,9 +2,9 @@
 <%= for player <- @players do %>
   <div>
     <%= if player.id == @id do %>
-      <b><%= player.display_name %></b>
+      <b><%= player.display_name %> - <%= player.honey %></b>
     <% else %>
-      <%= player.display_name %>
+      <%= player.display_name %> - <%= player.honey %>
     <% end %>
   </div>
 <% end %>
