@@ -1,69 +1,75 @@
-game {
-  bottom: 0;
-  left: 0;
-  position: fixed;
-  right: 0;
-  top: 0;
+.lobby {
+  text-align: center;
 }
 
-debug {
-  left: 15px;
-  position: absolute;
-  top: 15px;
-  z-index: 10;
+.gui {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-controls {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  z-index: 10;
+.map {
+  background: black;
+  display: flex;
+  flex-direction: column;
+  width: 800px;
+  height: 800px;
+  text-align: center;
+  margin: 0 auto;
 }
 
-body {
-  /* background: red; */
-  /* margin: 50vh 0 0 50vw; */
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  justify-content: space-evenly;
+  flex: 1;
 }
 
-world {
-  background: red;
-  /* margin: 50vh 0 0 50vw; */
-  /* bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  overflow: hidden;
-  z-index: 5; */
-  position: relative;
+/* Tiles of map (terain, border) */
+.tile {
+  background-size: cover;
+  image-rendering: pixelated;
+  height: 100%;
+  width: 25%; /* Make this variable? */
 }
-
-map {
-  background-color: green;
+.tile.grass {
   background-image: url("/images/grass.gif");
-  background-repeat: repeat;
-  background-size: 128px;
-  image-rendering: pixelated;
-  position: absolute;
-  /* width: 100000px;
-  height: 100000px; */
-  width: 1000px;
-  height: 1000px;
-  /* left: 50%; */
-  /* top: 50%; */
-  /* transform: translate(-50%, -50%); */
-  /* transform-origin: center; */
-  /* transition: bottom 100ms, right 100ms; */
+}
+.tile.nothing {
+  background: gray;
 }
 
-bear {
-  position: fixed;
-  top: 50vh;
-  left: 50vw;
-  width: 32px;
-  height: 32px;
-  transform: scale(4) translate(-50%, -50%);
-  transform-origin: center;
+/*
+Sprites that are displayed inside tiles (bears, trees, etc)
+*/
+.sprite {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
   image-rendering: pixelated;
-  background-image: url("/images/bear-front.gif");
+  height: 100%;
+  width: 100%;
+}
+
+/* Bear (player and opponents) */
+.bear.self {
+}
+.bear.opponent {
+  background: brown;
+}
+.bear.up {
+  background-image: url("/images/up.gif");
+}
+.bear.left {
+  background-image: url("/images/left.gif");
+}
+.bear.right {
+  background-image: url("/images/right.gif");
+}
+.bear.down {
+  background-image: url("/images/down.gif");
+}
+
+.tree {
+  background: lime;
 }

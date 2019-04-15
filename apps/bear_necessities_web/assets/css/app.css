@@ -2,67 +2,12 @@
 
 @import "../../../../deps/phoenix_live_view/assets/css/live_view.css";
 
-/* @import "./game/game.css"; */
+@import "./game/game.css";
 
 body {
+  /* background: black; */
+  /* color: white; */
   font-family: "Press Start 2P", Courier, monospace;
-  margin: 0;
-}
-
-.row {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  width: 100%;
-}
-
-.square {
-  display: inline-block;
-  width: 2.5em;
-  height: 2.5em;
-}
-
-.grass {
-  background: url("/images/grass.gif") no-repeat center center;
-  background-size: 2.5em;
-}
-
-.nothing {
-  background-size: 2.5em;
-  background-color: black;
-  background-image: none;
-}
-
-.up {
-  background: url(/images/up.gif) no-repeat center center;
-}
-.left {
-  background: url(/images/left.gif) no-repeat center center;
-}
-.right {
-  background: url(/images/right.gif) no-repeat center center;
-}
-.down {
-  background: url(/images/down.gif) no-repeat center center;
-}
-
-.own-bear {
-  display: inline-block;
-  width: 2.5em;
-  height: 2.5em;
-  background-size: cover;
-}
-.bear {
-  display: inline-block;
-  background: brown;
-  width: 2.5em;
-  height: 2.5em;
-}
-
-.tree {
-  display: inline-block;
-  background: lime;
-  border: 1px black dotted;
-  width: 2.5em;
-  height: 2.5em;
+  margin: 30px;
+  font-size: 18px;
 }

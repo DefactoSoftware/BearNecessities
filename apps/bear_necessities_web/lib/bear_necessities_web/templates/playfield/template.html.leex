@@ -5,29 +5,30 @@ player_id = @id
 <%= if @bear.started do %>
 
   <div>
-    <button phx-click="left">left</button>
-    <button phx-click="down">down</button>
-    <button phx-click="up">up</button>
-    <button phx-click="right">right</button>
-    <i phx-keydown="key_move" phx-target="window"></i>
+    <div class="gui">
+      <h1>Hello, <%= @bear.display_name %></h1>
+      <span>X: <%= @pos_x %></span>
+      <span>Y: <%= @pos_y %></span>
+      <button phx-click="left">left</button>
+      <button phx-click="down">down</button>
+      <button phx-click="up">up</button>
+      <button phx-click="right">right</button>
+      <span phx-keydown="key_move" phx-target="window"></span>
+    </div>
 
-    <h1>Hello, <%= @bear.display_name %></h1>
-    <h1>PosX <%= @pos_x %></h1>
-    <h1>PosY <%= @pos_y %></h1>
-
-    <div>
+    <div class="map">
       <%= for y <- @viewport do %>
         <div class="row">
           <%= for x <- y do %>
-            <div class="square <%= if x == :nothing, do: "nothing", else: "grass" %> ">
-              <div class="<%= case x do
-                  %Bear{id: id, direction: direction} when id == player_id -> "own-bear #{direction}"
-                  %Bear{}-> "bear"
+            <div class="tile <%= if x == :nothing, do: "nothing", else: "grass" %> ">
+              <div class="sprite <%= case x do
+                  %Bear{id: id, direction: direction} when id == player_id -> "bear self #{direction}"
+                  %Bear{}-> "bear opponent"
                   %Tree{} -> "tree"
                   :nothing -> "nothing"
                   _ -> "grass"
                 end
-              %>" >
+              %>">
               </div>
             </div>
           <% end %>
@@ -41,7 +42,7 @@ player_id = @id
   <div class="lobby">
     <%= form_tag "#", [phx_submit: :start] do %>
       <%= tag(:label, name:  :display_name)  %>
-      <%= tag(:input, type: "text", name: "display_name")%>
+      <%= tag(:input, type: "text", name: "display_name", value: "Player")%>
 
       <div>
         <%= submit "Start", phx_disable_with: "Starting..." %>
