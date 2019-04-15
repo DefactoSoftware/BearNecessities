@@ -4,6 +4,7 @@
 }
 
 .map {
+  border: 6px solid rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   width: 800px;
@@ -27,9 +28,21 @@
   height: 100%;
   flex: 1;
 }
-.tile.grass {
+.tile.grass-1 {
   background-color: #44d873;
-  background-image: url("/images/terain/grass.gif");
+  background-image: url("/images/terain/grass-1.gif");
+}
+.tile.grass-2 {
+  background-color: #44d873;
+  background-image: url("/images/terain/grass-2.gif");
+}
+.tile.grass-3 {
+  background-color: #44d873;
+  background-image: url("/images/terain/grass-3.gif");
+}
+.tile.grass-4 {
+  background-color: #44d873;
+  background-image: url("/images/terain/grass-4.gif");
 }
 .tile.nothing {
   background-color: gray;

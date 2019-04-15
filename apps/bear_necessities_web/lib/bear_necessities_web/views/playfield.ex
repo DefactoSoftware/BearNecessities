@@ -1,14 +1,14 @@
 defmodule BearNecessitiesWeb.Playfield do
   use BearNecessitiesWeb, :view
 
-  defp terrain_class(tile) do
+  def terrain_class(tile) do
     case tile do
       :nothing -> "nothing"
-      _ -> "grass"
+      _ -> "grass-#{:rand.uniform(4)}"
     end
   end
 
-  defp sprite_class(tile, player_id) do
+  def sprite_class(tile, player_id) do
     case tile do
       %Bear{id: id, direction: direction} when id == player_id -> "bear self #{direction}"
       %Bear{} -> "bear opponent"
