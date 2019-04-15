@@ -6,11 +6,12 @@
 }
 .input {
   border: 6px solid #363636;
-  box-shadow: inset -4px -4px 0px 0px #a9a9a9;
+  box-shadow: inset -0.25em -0.25em 0px 0px #a9a9a9;
 }
 .button {
-  color: white;
-  background: transparent;
+  background: #f6f6f6;
+  box-shadow: inset -0.25em -0.25em 0px 0px #a9a9a9;
+  color: #363636;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
@@ -40,21 +41,28 @@
 }
 
 .button.red {
+  color: white;
   background: #e76e55;
-  box-shadow: inset -4px -4px 0px 0px #8c2022;
+  box-shadow: inset -0.25em -0.25em 0px 0px #8c2022;
 }
 .button.red:hover,
 .button.red:focus {
   background: #ce372b;
-  box-shadow: inset -6px -6px 0px 0px #8c2022;
+  box-shadow: inset -0.35em -0.35em 0px 0px #8c2022;
 }
 
 .button.green {
+  color: white;
   background: #92cd41;
-  box-shadow: inset -4px -4px 0px 0px #4aa52e;
+  box-shadow: inset -0.25em -0.25em 0px 0px #4aa52e;
 }
 .button.green:hover,
 .button.green:focus {
   background: #76c442;
-  box-shadow: inset -6px -6px 0px 0px #4aa52e;
+  box-shadow: inset -0.35em -0.35em 0px 0px #4aa52e;
+}
+
+.button.small {
+  font-size: 12px;
+  padding: 7px;
 }

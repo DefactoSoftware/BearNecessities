@@ -4,7 +4,6 @@
 }
 
 .map {
-  background: black;
   display: flex;
   flex-direction: column;
   width: 800px;
@@ -29,6 +28,7 @@
   width: 25%; /* Make this variable? */
 }
 .tile.grass {
+  background-color: #44d873;
   background-image: url("/images/grass.gif");
 }
 .tile.nothing {
