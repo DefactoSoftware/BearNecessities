@@ -67,26 +67,36 @@ defmodule Game do
         _pid,
         state
       ) do
-    state =
+    {state, bear} =
       case target(direction, x, y, state) do
         %Tree{honey: tree_honey} = tree when tree_honey > 0 ->
-          state
-          |> update_state_with(%{bear | honey: bear_honey + 1})
-          |> update_state_with(%{tree | honey: tree_honey - 1})
+          new_bear = %{bear | honey: bear_honey + 1}
+
+          new_state =
+            state
+            |> update_state_with(new_bear)
+            |> update_state_with(%{tree | honey: tree_honey - 1})
+
+          {new_state, new_bear}
 
         %Bear{honey: other_bear_honey} = other_bear when other_bear_honey > 0 ->
-          state
-          |> update_state_with(%{bear | honey: bear_honey + 1})
-          |> update_state_with(%{other_bear | honey: other_bear_honey - 1})
+          new_bear = %{bear | honey: bear_honey + 1}
+
+          new_state =
+            state
+            |> update_state_with(new_bear)
+            |> update_state_with(%{other_bear | honey: other_bear_honey - 1})
+
+          {new_state, new_bear}
 
         %Tree{honey: 0} ->
-          state
+          {state, bear}
 
         %Bear{honey: 0} ->
-          state
+          {state, bear}
 
         _ ->
-          state
+          {state, bear}
       end
 
     {:reply, bear, state}
