@@ -1,46 +1,51 @@
-<%= if @bear.started do %>
+<%= if @set_setting == false do  %>
+  <%= if @bear.started do %>
 
-  <div>
-    <div class="gui">
-      <h1>Hello, <%= @bear.display_name %></h1>
-      <span>X: <%= @pos_x %></span>
-      <span>Y: <%= @pos_y %></span>
-      <button phx-click="left" class="button small">left</button>
-      <button phx-click="down" class="button small">down</button>
-      <button phx-click="up" class="button small">up</button>
-      <button phx-click="right" class="button small">right</button>
-      <span phx-keydown="key_move" phx-target="window"></span>
+    <div>
+      <div class="gui">
+        <h1>Hello, <%= @bear.display_name %></h1>
+        <span>X: <%= @pos_x %></span>
+        <span>Y: <%= @pos_y %></span>
+        <button phx-click="set_setting" value="<%= @set_setting %>" class="button small">Settings</button>
+        <span phx-keydown="key_move" phx-target="window"></span>
+      </div>
+
+      <div class="map">
+        <%= for row <- @viewport do %>
+          <div class="row">
+            <%= for tile <- row do %>
+              <div class="tile <%= terrain_class(tile) %> ">
+                <div class="sprite <%= sprite_class(tile, @id) %>"></div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
 
-    <div class="map">
-      <%= for row <- @viewport do %>
-        <div class="row">
-          <%= for tile <- row do %>
-            <div class="tile <%= terrain_class(tile) %> ">
-              <div class="sprite <%= sprite_class(tile, @id) %>"></div>
-            </div>
-          <% end %>
-        </div>
+  <% else %>
+
+    <div class="lobby">
+      <h1>Bear<br>Necessities</h1>
+
+      <img src="/images/down.gif" class="player">
+
+      <%= form_tag "#", [phx_submit: :start] do %>
+        <%= label(:player, :display_name, "What is Your Name?") %>
+        <br><br><br>
+        <%= text_input(:player, :display_name, value: "Player1", class: "input") %>
+
+        <%= submit("Start", phx_disable_with: "Starting...", class: "button red") %>
       <% end %>
     </div>
-  </div>
+  <% end %>
+<% end %>
 
-<% else %>
 
-  <div class="lobby">
-    <h1>Bear<br>Necessities</h1>
-
-    <img src="/images/down.gif" class="player">
-
-    <%= form_tag "#", [phx_submit: :start] do %>
-      <%= label(:player, :display_name, "What is Your Name?") %>
-      <br><br><br>
-      <%= text_input(:player, :display_name, value: "Player1", class: "input") %>
-
-      <%= submit("Start", phx_disable_with: "Starting...", class: "button red") %>
-    <% end %>
+<%= BearNecessitiesWeb.Playfield.render("scoreboard.html", assigns) %>
+<%= if @set_setting != false do  %>
+  <div phx-keyup="set_movement" phx-value="<%= @set_setting %>" phx-target="window">
+    Set key for <%= @set_setting %>
   </div>
 
 <% end %>
-
-<%= BearNecessitiesWeb.Playfield.render("scoreboard.html", assigns) %>

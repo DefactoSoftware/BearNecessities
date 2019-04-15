@@ -2,8 +2,6 @@ defmodule BearNecessitiesWeb.Game do
   use Phoenix.LiveView
   require Logger
 
-  @action_keys ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"]
-
   alias BearNecessitiesWeb.Playfield
 
   def render(assigns) do
@@ -11,6 +9,7 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def mount(_session, %{id: id} = socket) do
+    pid = Player.setup_player()
     field = Game.get_field(id)
     players = Game.get_players()
 
@@ -20,6 +19,8 @@ defmodule BearNecessitiesWeb.Game do
       |> assign(:viewport, [])
       |> assign(:pos_x, nil)
       |> assign(:pos_y, nil)
+      |> assign(:set_setting, false)
+      |> assign(:player_id, pid)
       |> assign(:field, field)
       |> assign(:players, players)
       |> assign(:bear, %Bear{started: false})
@@ -48,10 +49,8 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
-  def handle_event("key_move", key, %{id: id} = socket)
-      when key in @action_keys do
-    bear = Player.move(id, move_to(key))
-
+  def handle_event("key_move", key, %{id: id, assigns: %{player_id: pid}} = socket) do
+    bear = Player.move(id, pid, key)
     viewport = ViewPort.get_viewport(id)
 
     socket =
@@ -63,7 +62,17 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
-  def handle_event("key_move", _, socket) do
+  def handle_event("set_setting", value, socket) do
+    socket = assign(socket, :set_setting, Player.set_setting(value))
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "set_movement",
+        key,
+        %{assigns: %{player_id: pid, set_setting: set_setting}} = socket
+      ) do
+    socket = assign(socket, :set_setting, Player.update_movement(pid, key, set_setting))
     {:noreply, socket}
   end
 
@@ -84,9 +93,4 @@ defmodule BearNecessitiesWeb.Game do
 
     reason
   end
-
-  def move_to("ArrowRight"), do: :right_arrow
-  def move_to("ArrowLeft"), do: :left_arrow
-  def move_to("ArrowUp"), do: :up_arrow
-  def move_to("ArrowDown"), do: :down_arrow
 end
