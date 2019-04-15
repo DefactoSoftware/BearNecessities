@@ -23,7 +23,7 @@
 
 .nothing {
   background-size: 2.5em;
-  background-color: black !important;
+  background-color: black;
   background-image: none;
 }
 
