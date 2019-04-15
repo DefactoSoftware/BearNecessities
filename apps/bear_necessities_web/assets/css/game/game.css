@@ -81,5 +81,5 @@ Sprites that are displayed inside tiles (bears, trees, etc)
 }
 
 .tree {
-  background: lime;
+  background-image: url("/images/trees/tree-1.gif");
 }
