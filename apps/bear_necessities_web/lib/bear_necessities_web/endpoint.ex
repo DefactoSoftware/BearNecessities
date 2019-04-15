@@ -2,7 +2,7 @@ defmodule BearNecessitiesWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :bear_necessities_web
 
   socket "/socket", BearNecessitiesWeb.UserSocket,
-    websocket: true,
+    websocket: [timeout: 45_000],
     longpoll: false
 
   socket "/live", Phoenix.LiveView.Socket
