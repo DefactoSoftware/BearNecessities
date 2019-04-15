@@ -71,6 +71,11 @@ defmodule Game do
   end
 
   @impl true
+  def handle_call(:get_players, _pid, %{bears: bears} = state) do
+    {:reply, bears, state}
+  end
+
+  @impl true
   def handle_cast({:remove_bear, id}, %{bears: bears} = state) do
     bears = Enum.reject(bears, &(&1.id == id))
 
@@ -181,6 +186,10 @@ defmodule Game do
         )
       end
     )
+  end
+
+  def get_players() do
+    GenServer.call(Game, :get_players)
   end
 
   @doc """

@@ -1,0 +1,10 @@
+<h1>Contending players</h1>
+<%= for player <- @players do %>
+  <div>
+    <%= if player.id == @id do %>
+      <b><%= player.display_name %></b>
+    <% else %>
+      <%= player.display_name %>
+    <% end %>
+  </div>
+<% end %>
