@@ -14,7 +14,7 @@
       <%= for y <- @viewport do %>
         <div class="row">
           <%= for x <- y do %>
-            <div class=" square <%= if x == :nothing, do: "nothing", else: "grass" %> ">
+            <div class="square <%= if x == :nothing, do: "nothing", else: "grass" %> ">
             <div class="<%= case x do
                 %Bear{id: id, direction: direction} when id == player_id -> "own-bear #{direction}"
                 %Bear{}-> "bear"
