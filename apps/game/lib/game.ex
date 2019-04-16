@@ -151,7 +151,6 @@ defmodule Game do
           pos_y <= item_y + @vertical_view_distance and pos_y >= item_y - @vertical_view_distance
       end)
     end)
-    |> Task.await()
   end
 
   def item_from_list({row, column}, list) do
@@ -161,7 +160,10 @@ defmodule Game do
   end
 
   def create_viewport({bear_x, bear_y} = position, %{field: field, bears: bears, trees: trees}) do
-    list = get_from_list(position, bears) ++ get_from_list(position, trees)
+    bears_task = get_from_list_task(position, bears)
+    trees_task = get_from_list_task(position, trees)
+
+    Task.await(bears_task) ++ Task.await(trees_task)
 
     Enum.reduce(
       (bear_x - @horizontal_view_distance)..(bear_x + @horizontal_view_distance),
