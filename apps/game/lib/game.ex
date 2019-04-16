@@ -17,7 +17,7 @@ defmodule Game do
        bears: [],
        bees: [],
        trees: [
-         %Tree{pos_x: 4, pos_y: 4}
+         %Tree{pos_x: 4, pos_y: 4, honey: 10}
        ]
      }}
   end
@@ -67,7 +67,7 @@ defmodule Game do
         _pid,
         state
       ) do
-    {state, bear} =
+    {bear, state} =
       case target(direction, x, y, state) do
         %Tree{honey: tree_honey} = tree when tree_honey > 0 ->
           new_bear = %{bear | honey: bear_honey + 1}
@@ -77,7 +77,7 @@ defmodule Game do
             |> update_state_with(new_bear)
             |> update_state_with(%{tree | honey: tree_honey - 1})
 
-          {new_state, new_bear}
+          {new_bear, new_state}
 
         %Bear{honey: other_bear_honey} = other_bear when other_bear_honey > 0 ->
           new_bear = %{bear | honey: bear_honey + 1}
@@ -87,16 +87,16 @@ defmodule Game do
             |> update_state_with(new_bear)
             |> update_state_with(%{other_bear | honey: other_bear_honey - 1})
 
-          {new_state, new_bear}
+          {new_bear, new_state}
 
         %Tree{honey: 0} ->
-          {state, bear}
+          {bear, state}
 
         %Bear{honey: 0} ->
-          {state, bear}
+          {bear, state}
 
         _ ->
-          {state, bear}
+          {bear, state}
       end
 
     {:reply, bear, state}
@@ -128,14 +128,14 @@ defmodule Game do
   def target(direction, x, y, %{bears: bears, trees: trees}) do
     {target_x, target_y} =
       case direction do
-        :down -> {x, y + 1}
-        :up -> {x, y - 1}
-        :left -> {x - 1, y}
-        :right -> {x + 1, y}
+        :down -> {x + 1, y}
+        :up -> {x - 1, y}
+        :left -> {x, y - 1}
+        :right -> {x, y + 1}
       end
 
-    Enum.find(bears, &(&1.x == target_x and &1.y == target_y)) ||
-      Enum.find(trees, &(&1.x == target_x and &1.y == target_y))
+    Enum.find(bears, &(&1.pos_x == target_x and &1.pos_y == target_y)) ||
+      Enum.find(trees, &(&1.pos_x == target_x and &1.pos_y == target_y))
   end
 
   def update_state_with(%{bears: bears} = state, bear = %Bear{}) do

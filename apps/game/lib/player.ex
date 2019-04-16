@@ -17,18 +17,35 @@ defmodule Player do
   def handle_call({:action, user_input, id}, _pid, _) do
     bear =
       case user_input do
-        :up_arrow -> Bear.move(id, :up)
-        :down_arrow -> Bear.move(id, :down)
-        :left_arrow -> Bear.move(id, :left)
-        :right_arrow -> Bear.move(id, :right)
-        :space -> Bear.claw(id)
+        :up_arrow ->
+          Bear.move(id, :up)
+
+        :down_arrow ->
+          Bear.move(id, :down)
+
+        :left_arrow ->
+          Bear.move(id, :left)
+
+        :right_arrow ->
+          Bear.move(id, :right)
       end
+
+    {:reply, bear, []}
+  end
+
+  @imp true
+  def handle_call({:claw, id}, _pid, _) do
+    bear = Bear.claw(id)
 
     {:reply, bear, []}
   end
 
   def move(player_id, way) do
     GenServer.call(Player, {:action, way, player_id})
+  end
+
+  def claw(player_id) do
+    GenServer.call(Player, {:claw, player_id})
   end
 
   def start(display_name, id) do

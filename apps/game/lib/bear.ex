@@ -37,7 +37,9 @@ defmodule Bear do
   defp _move(bear, :left), do: Game.move(bear, :left, to: {bear.pos_x, bear.pos_y - 1})
   defp _move(bear, :right), do: Game.move(bear, :right, to: {bear.pos_x, bear.pos_y + 1})
 
-  def claw(bear) do
-    Game.claw(bear)
+  def claw(id) do
+    id
+    |> Game.get_bear()
+    |> Game.claw()
   end
 end
