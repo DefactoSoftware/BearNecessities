@@ -74,19 +74,19 @@ Items that are displayed inside tiles (bears, trees, etc)
 }
 
 .bear.up {
-  background-image: url("/images/bear/up.gif");
+  background-image: url("/images/bear/move_up.gif");
 }
 
 .bear.left {
-  background-image: url("/images/bear/left.gif");
+  background-image: url("/images/bear/move_left.gif");
 }
 
 .bear.right {
-  background-image: url("/images/bear/right.gif");
+  background-image: url("/images/bear/move_right.gif");
 }
 
 .bear.down {
-  background-image: url("/images/bear/down.gif");
+  background-image: url("/images/bear/move_down.gif");
 }
 
 .tree {
