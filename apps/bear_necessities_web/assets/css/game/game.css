@@ -55,9 +55,9 @@
 }
 
 /*
-Sprites that are displayed inside tiles (bears, trees, etc)
+Items that are displayed inside tiles (bears, trees, etc)
 */
-.sprite {
+.item {
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;

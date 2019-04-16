@@ -12,13 +12,16 @@ defmodule Game do
 
   @impl true
   def init([]) do
-    {:ok,
-     %Game{
-       field: %Field{height: 40, width: 40},
-       bears: [],
-       bees: [],
-       trees: spawn_trees()
-     }}
+    field = Field.create_field(40, 40)
+
+    game = %Game{
+      field: field,
+      bears: [],
+      bees: [],
+      trees: spawn_trees()
+    }
+
+    {:ok, game}
   end
 
   @impl true
@@ -227,7 +230,7 @@ defmodule Game do
     |> List.last()
   end
 
-  def create_viewport({bear_x, bear_y} = position, %{field: field, bears: bears, trees: trees}) do
+  def create_viewport({bear_x, bear_y} = position, %Game{field: field, bears: bears, trees: trees}) do
     bears_task = get_from_list_task(position, bears)
     trees_task = get_from_list_task(position, trees)
 
@@ -247,9 +250,14 @@ defmodule Game do
               inner ++
                 [
                   cond do
-                    not is_nil(item = item_from_list({row, column}, list)) -> item
-                    pos_within_field?({row, column}, field) -> :grass
-                    true -> :nothing
+                    not is_nil(item = item_from_list({row, column}, list)) ->
+                      {get_tile(field, row, column), item}
+
+                    pos_within_field?({row, column}, field) ->
+                      {get_tile(field, row, column), nil}
+
+                    true ->
+                      {nil, nil}
                   end
                 ]
             end
@@ -257,6 +265,12 @@ defmodule Game do
         )
       end
     )
+  end
+
+  def get_tile(field, row, column) do
+    field.tiles
+    |> Enum.at(row - 1)
+    |> Enum.at(column - 1)
   end
 
   def get_players() do
