@@ -143,7 +143,7 @@ defmodule Game do
     GenServer.call(Game, {:create_bear, display_name: display_name, id: id, started: started})
   end
 
-  def get_from_list({item_x, item_y}, list) do
+  def get_from_list_task({item_x, item_y}, list) do
     Task.async(fn ->
       Enum.filter(list, fn %{pos_x: pos_x, pos_y: pos_y} ->
         pos_x <= item_x + @horizontal_view_distance and
@@ -163,7 +163,7 @@ defmodule Game do
     bears_task = get_from_list_task(position, bears)
     trees_task = get_from_list_task(position, trees)
 
-    Task.await(bears_task) ++ Task.await(trees_task)
+    list = Task.await(bears_task) ++ Task.await(trees_task)
 
     Enum.reduce(
       (bear_x - @horizontal_view_distance)..(bear_x + @horizontal_view_distance),
