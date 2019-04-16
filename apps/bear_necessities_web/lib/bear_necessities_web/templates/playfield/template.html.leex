@@ -15,9 +15,9 @@
     <div class="map">
       <%= for row <- @viewport do %>
         <div class="row">
-          <%= for tile <- row do %>
-            <div class="tile <%= terrain_class(tile) %> ">
-              <div class="sprite <%= sprite_class(tile, @id) %>"></div>
+          <%= for {tile, item} <- row do %>
+            <div class="tile <%= tile_class(tile) %> ">
+              <div class="item <%= item_class(item, @id) %>"></div>
             </div>
           <% end %>
         </div>
