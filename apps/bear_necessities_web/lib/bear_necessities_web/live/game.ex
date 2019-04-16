@@ -63,6 +63,11 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
+  def handle_event("key_move", " ", %{id: id} = socket) do
+    Player.claw(id)
+    {:noreply, socket}
+  end
+
   def handle_event("key_move", _, socket) do
     {:noreply, socket}
   end

@@ -17,7 +17,7 @@ defmodule Game do
        bears: [],
        bees: [],
        trees: [
-         %Tree{pos_x: 4, pos_y: 4}
+         %Tree{pos_x: 4, pos_y: 4, honey: 10}
        ]
      }}
   end
@@ -62,6 +62,47 @@ defmodule Game do
   end
 
   @impl true
+  def handle_call(
+        {:claw, %Bear{honey: bear_honey, direction: direction, pos_x: x, pos_y: y} = bear},
+        _pid,
+        state
+      ) do
+    {bear, state} =
+      case target(direction, x, y, state) do
+        %Tree{honey: tree_honey} = tree when tree_honey > 0 ->
+          new_bear = %{bear | honey: bear_honey + 1}
+
+          new_state =
+            state
+            |> update_state_with(new_bear)
+            |> update_state_with(%{tree | honey: tree_honey - 1})
+
+          {new_bear, new_state}
+
+        %Bear{honey: other_bear_honey} = other_bear when other_bear_honey > 0 ->
+          new_bear = %{bear | honey: bear_honey + 1}
+
+          new_state =
+            state
+            |> update_state_with(new_bear)
+            |> update_state_with(%{other_bear | honey: other_bear_honey - 1})
+
+          {new_bear, new_state}
+
+        %Tree{honey: 0} ->
+          {bear, state}
+
+        %Bear{honey: 0} ->
+          {bear, state}
+
+        _ ->
+          {bear, state}
+      end
+
+    {:reply, bear, state}
+  end
+
+  @impl true
   def handle_call({:get_bear, id}, _pid, %{bears: bears} = state) do
     bear = get_bear_from_list(id, bears)
     {:reply, bear, state}
@@ -84,6 +125,19 @@ defmodule Game do
     {:noreply, %{state | bears: bears}}
   end
 
+  def target(direction, x, y, %{bears: bears, trees: trees}) do
+    {target_x, target_y} =
+      case direction do
+        :down -> {x + 1, y}
+        :up -> {x - 1, y}
+        :left -> {x, y - 1}
+        :right -> {x, y + 1}
+      end
+
+    Enum.find(bears, &(&1.pos_x == target_x and &1.pos_y == target_y)) ||
+      Enum.find(trees, &(&1.pos_x == target_x and &1.pos_y == target_y))
+  end
+
   def update_state_with(%{bears: bears} = state, bear = %Bear{}) do
     bears =
       Enum.map(bears, fn list_bear ->
@@ -95,8 +149,23 @@ defmodule Game do
     %{state | bears: bears}
   end
 
+  def update_state_with(%{trees: trees} = state, tree = %Tree{}) do
+    trees =
+      Enum.map(trees, fn list_tree ->
+        if list_tree.pos_y == tree.pos_y and list_tree.pos_x == tree.pos_x,
+          do: tree,
+          else: list_tree
+      end)
+
+    %{state | trees: trees}
+  end
+
   def move(bear, direction, position) do
     GenServer.call(Game, {:move, bear, direction, position})
+  end
+
+  def claw(bear) do
+    GenServer.call(Game, {:claw, bear})
   end
 
   def get_bear(id) do
