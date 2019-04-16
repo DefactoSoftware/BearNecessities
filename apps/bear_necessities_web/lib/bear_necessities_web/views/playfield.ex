@@ -11,7 +11,7 @@ defmodule BearNecessitiesWeb.Playfield do
   def sprite_class(tile, player_id) do
     case tile do
       %Bear{id: id, direction: direction} when id == player_id -> "bear self #{direction}"
-      %Bear{} -> "bear opponent"
+      %Bear{direction: direction} -> "bear opponent #{direction}"
       %Tree{} -> "tree"
       _ -> nil
     end
