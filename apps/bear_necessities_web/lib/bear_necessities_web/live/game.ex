@@ -2,7 +2,8 @@ defmodule BearNecessitiesWeb.Game do
   use Phoenix.LiveView
   require Logger
 
-  @action_keys ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"]
+  @move_keys ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"]
+  @action_keys [" "]
 
   alias BearNecessitiesWeb.Playfield
 
@@ -49,7 +50,7 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def handle_event("key_move", key, %{id: id} = socket)
-      when key in @action_keys do
+      when key in @move_keys do
     bear = Player.move(id, move_to(key))
 
     viewport = ViewPort.get_viewport(id)
@@ -67,12 +68,13 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
-  def handle_event("claw", " ", %{id: id} = socket) do
+  def handle_event("claw", key, %{id: id} = socket)
+      when key in @action_keys do
     Player.claw(id)
     {:noreply, socket}
   end
 
-  def handle_event("claw", _, %{id: id} = socket) do
+  def handle_event("claw", _, socket) do
     {:noreply, socket}
   end
 
