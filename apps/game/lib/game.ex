@@ -117,7 +117,7 @@ defmodule Game do
 
   @impl true
   def handle_call(:get_players, _pid, %{bears: bears} = state) do
-    bears = Enum.sort_by(bears, & &1.honey) |> Enum.reverse()
+    bears = Enum.sort(bears, &(&1.honey >= &2.honey))
 
     {:reply, bears, state}
   end
