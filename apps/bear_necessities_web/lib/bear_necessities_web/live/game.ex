@@ -48,6 +48,15 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
+  # def handle_info(:update, %{id: id, %{assigns: %{bear: %Bear{dead: dead}}}} = socket) when dead < 0 do
+
+  # end
+
+  def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: dead}}} = socket)
+      when not is_nil(dead) do
+    {:noreply, update(socket, :bear, &(&1.dead - 50))}
+  end
+
   def handle_event("key_move", key, %{id: id} = socket)
       when key in @action_keys do
     bear = Player.move(id, move_to(key))
