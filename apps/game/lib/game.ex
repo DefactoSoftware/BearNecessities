@@ -4,7 +4,7 @@ defmodule Game do
   @vertical_view_distance 5
   @horizontal_view_distance 5
   @number_of_trees 20
-  @max_honey_drops 4
+  @max_honey_drops 8
   @field_height 40
   @field_width 40
 
