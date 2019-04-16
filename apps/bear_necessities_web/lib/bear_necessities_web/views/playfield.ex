@@ -4,7 +4,7 @@ defmodule BearNecessitiesWeb.Playfield do
   def tile_class(tile) do
     case tile do
       %Tile{type: :grass, texture: texture} -> "grass-#{texture}"
-      nil -> "nothing"
+      %Tile{type: :nothing} -> "nothing"
     end
   end
 

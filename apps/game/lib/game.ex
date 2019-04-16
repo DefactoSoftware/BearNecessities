@@ -257,7 +257,7 @@ defmodule Game do
                       {get_tile(field, row, column), nil}
 
                     true ->
-                      {nil, nil}
+                      {%Tile{type: :nothing}, nil}
                   end
                 ]
             end
