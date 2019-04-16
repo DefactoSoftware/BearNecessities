@@ -30,7 +30,7 @@
   <div class="lobby">
     <h1>Bear<br>Necessities</h1>
 
-    <%= img_tag(Routes.static_path(BearNecessitiesWeb.Endpoint, "/images/down.gif"), class: "player") %>
+    <%= img_tag(Routes.static_path(BearNecessitiesWeb.Endpoint, "/images/bear/down.gif"), class: "player") %>
 
     <%= form_tag "#", [phx_submit: :start] do %>
       <%= label(:player, :display_name, "What is Your Name?") %>
