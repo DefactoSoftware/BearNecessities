@@ -51,7 +51,6 @@ defmodule BearNecessitiesWeb.Game do
   def handle_event("key_move", key, %{id: id} = socket)
       when key in @action_keys do
     bear = Player.move(id, move_to(key))
-
     viewport = ViewPort.get_viewport(id)
 
     socket =
@@ -67,12 +66,19 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
-  def handle_event("claw", " ", %{id: id} = socket) do
+  def handle_event("key_up", key, %{id: id} = socket)
+      when key in @action_keys do
+    Bear.stop(id)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("key_up", " ", %{id: id} = socket) do
     Player.claw(id)
     {:noreply, socket}
   end
 
-  def handle_event("claw", _, %{id: id} = socket) do
+  def handle_event("key_up", _, %{id: id} = socket) do
     {:noreply, socket}
   end
 
