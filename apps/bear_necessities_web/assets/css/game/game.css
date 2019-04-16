@@ -86,8 +86,8 @@ Items that are displayed inside tiles (bears, trees, etc)
 .bear.down {
   background-image: url("/images/bear/down.gif");
 }
-.bear.moving-false {
-  background-image: url("/images/bear/still.gif");
+.bear.idle {
+  background-image: url("/images/bear/idle.gif");
 }
 
 .tree {
