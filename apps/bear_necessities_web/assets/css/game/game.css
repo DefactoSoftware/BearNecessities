@@ -68,7 +68,9 @@ Items that are displayed inside tiles (bears, trees, etc)
 
 /* Honey */
 .honey {
-  background: yellow;
+  background-image: url("/images/honey/drop.gif");
+  background-repeat: no-repeat;
+  background-size: 122px;
 }
 
 /* Bear (player and opponents) */
