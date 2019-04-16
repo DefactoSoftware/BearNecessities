@@ -1,7 +1,7 @@
 defmodule Game do
   use GenServer
-  @vertical_view_distance 2
-  @horizontal_view_distance 2
+  @vertical_view_distance 5
+  @horizontal_view_distance 5
 
   defstruct [:field, :bears, :bees, :trees]
 
@@ -13,7 +13,7 @@ defmodule Game do
   def init([]) do
     {:ok,
      %Game{
-       field: %Field{height: 11, width: 11},
+       field: %Field{height: 40, width: 40},
        bears: [],
        bees: [],
        trees: [
