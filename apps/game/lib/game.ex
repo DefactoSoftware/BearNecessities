@@ -2,6 +2,7 @@ defmodule Game do
   use GenServer
   @vertical_view_distance 5
   @horizontal_view_distance 5
+  @number_of_trees 20
 
   defstruct [:field, :bears, :bees, :trees]
 
@@ -16,9 +17,7 @@ defmodule Game do
        field: %Field{height: 40, width: 40},
        bears: [],
        bees: [],
-       trees: [
-         %Tree{pos_x: 4, pos_y: 4, honey: 10}
-       ]
+       trees: spawn_trees()
      }}
   end
 
@@ -269,6 +268,25 @@ defmodule Game do
   """
   def remove_bear(id) do
     GenServer.cast(Game, {:remove_bear, id})
+  end
+
+  defp spawn_trees() do
+    all_x = Enum.to_list(0..40)
+    all_y = Enum.to_list(0..40)
+
+    create_tree(all_x, all_y)
+  end
+
+  defp create_tree(possible_x, possible_y, trees \\ []) do
+    if Enum.count(trees) < @number_of_trees do
+      x = Enum.random(possible_x)
+      y = Enum.random(possible_y)
+      tree = %Tree{pos_x: x, pos_y: y, honey: 1..15 |> Enum.to_list() |> Enum.random()}
+
+      create_tree(possible_x -- [x], possible_y -- [y], [tree | trees])
+    else
+      trees
+    end
   end
 
   def handle_info(pid, state) do
