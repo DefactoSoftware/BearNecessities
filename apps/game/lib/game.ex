@@ -2,8 +2,11 @@ defmodule Game do
   use GenServer
   @vertical_view_distance 2
   @horizontal_view_distance 2
+  @max_honey_drops 4
+  @field_height 11
+  @field_width 11
 
-  defstruct [:field, :bears, :bees, :trees]
+  defstruct [:field, :bears, :bees, :trees, :honey_drops]
 
   def start_link(default) when is_list(default) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
@@ -11,15 +14,39 @@ defmodule Game do
 
   @impl true
   def init([]) do
+    :timer.send_interval(3000, self(), :spawn_honey)
+
     {:ok,
      %Game{
-       field: %Field{height: 11, width: 11},
+       field: %Field{height: @field_height, width: @field_width},
        bears: [],
        bees: [],
+       honey_drops: [%HoneyDrop{pos_x: 2, pos_y: 2}],
        trees: [
          %Tree{pos_x: 4, pos_y: 4, honey: 10}
        ]
      }}
+  end
+
+  @impl true
+  def handle_info(:spawn_honey, %{honey_drops: honey_drops} = state) do
+    new_honey_drops =
+      if Enum.count(honey_drops) < @max_honey_drops do
+        spawn_honey_drop(honey_drops)
+      else
+        honey_drops
+      end
+
+    {:noreply, %{state | honey_drops: new_honey_drops}}
+  end
+
+  defp spawn_honey_drop(honey_drops) do
+    all_x = Enum.map(honey_drops, & &1.pos_x)
+    all_y = Enum.map(honey_drops, & &1.pos_y)
+    potential_x = Enum.to_list(0..@field_height) -- all_x
+    potential_y = Enum.to_list(0..@field_width) -- all_y
+
+    [%HoneyDrop{pos_x: Enum.random(potential_x), pos_y: Enum.random(potential_y)} | honey_drops]
   end
 
   @impl true
@@ -49,16 +76,20 @@ defmodule Game do
   def handle_call(
         {:move, %Bear{id: id} = bear, direction, [to: {pos_x, pos_y} = position]},
         _pid,
-        state
+        %{honey_drops: honey_drops} = state
       ) do
-    bear =
-      if move_to?(position, id, state),
-        do: %{bear | pos_x: pos_x, pos_y: pos_y, direction: direction},
-        else: %{bear | direction: direction}
+    {bear, honey_drops} =
+      if move_to?(position, id, state) do
+        {bear, honey_drops} = honey_drop?(bear, position, honey_drops)
+        new_bear = %{bear | pos_x: pos_x, pos_y: pos_y, direction: direction}
+        {new_bear, honey_drops}
+      else
+        {%{bear | direction: direction}, honey_drops}
+      end
 
     state = update_state_with(state, bear)
 
-    {:reply, bear, state}
+    {:reply, bear, %{state | honey_drops: honey_drops}}
   end
 
   @impl true
@@ -204,6 +235,21 @@ defmodule Game do
     Task.await(id_bears) and Task.await(id_trees) and pos_within_field?(position, field)
   end
 
+  defp honey_drop?(%{honey: honey} = bear, position, honey_drops) do
+    with %HoneyDrop{} = honey_drop <-
+           Enum.find(honey_drops, fn honey_drop ->
+             {honey_drop.pos_x, honey_drop.pos_y} == position
+           end) do
+      new_bear = %{bear | honey: honey + 1}
+      new_honey_drops = honey_drops -- [honey_drop]
+
+      {new_bear, new_honey_drops}
+    else
+      nil ->
+        {bear, honey_drops}
+    end
+  end
+
   def pos_within_field?({pos_x, pos_y} = position, %{height: height, width: width}) do
     pos_x >= 0 and pos_y >= 0 and pos_x <= height and pos_y <= width
   end
@@ -228,11 +274,17 @@ defmodule Game do
     |> List.last()
   end
 
-  def create_viewport({bear_x, bear_y} = position, %{field: field, bears: bears, trees: trees}) do
+  def create_viewport({bear_x, bear_y} = position, %{
+        field: field,
+        bears: bears,
+        trees: trees,
+        honey_drops: honey_drops
+      }) do
     bears_task = get_from_list_task(position, bears)
     trees_task = get_from_list_task(position, trees)
+    honey_drops_task = get_from_list_task(position, honey_drops)
 
-    list = Task.await(bears_task) ++ Task.await(trees_task)
+    list = Task.await(bears_task) ++ Task.await(trees_task) ++ Task.await(honey_drops_task)
 
     Enum.reduce(
       (bear_x - @horizontal_view_distance)..(bear_x + @horizontal_view_distance),

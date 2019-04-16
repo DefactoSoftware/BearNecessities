@@ -61,6 +61,11 @@ Sprites that are displayed inside tiles (bears, trees, etc)
   width: 100%;
 }
 
+/* Honey */
+.honey {
+  background: yellow;
+}
+
 /* Bear (player and opponents) */
 .bear.self {
 }
