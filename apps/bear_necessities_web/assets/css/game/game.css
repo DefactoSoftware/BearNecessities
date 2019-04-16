@@ -28,22 +28,27 @@
   height: 100%;
   flex: 1;
 }
+
 .tile.grass-1 {
   background-color: #44d873;
   background-image: url("/images/terain/grass-1.gif");
 }
+
 .tile.grass-2 {
   background-color: #44d873;
   background-image: url("/images/terain/grass-2.gif");
 }
+
 .tile.grass-3 {
   background-color: #44d873;
   background-image: url("/images/terain/grass-3.gif");
 }
+
 .tile.grass-4 {
   background-color: #44d873;
   background-image: url("/images/terain/grass-4.gif");
 }
+
 .tile.nothing {
   background-color: gray;
   background-image: url("/images/terain/nothing.gif");
@@ -63,24 +68,30 @@ Sprites that are displayed inside tiles (bears, trees, etc)
 
 /* Honey */
 .honey {
-  background: yellow;
+  background-image: url("/images/honey/drop.gif");
+  background-repeat: no-repeat;
+  background-size: 122px;
 }
 
 /* Bear (player and opponents) */
-.bear.self {
-}
+.bear.self {}
+
 .bear.opponent {
   background: brown;
 }
+
 .bear.up {
   background-image: url("/images/bear/up.gif");
 }
+
 .bear.left {
   background-image: url("/images/bear/left.gif");
 }
+
 .bear.right {
   background-image: url("/images/bear/right.gif");
 }
+
 .bear.down {
   background-image: url("/images/bear/down.gif");
 }
