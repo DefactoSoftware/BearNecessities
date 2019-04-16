@@ -23,7 +23,7 @@ defmodule Game do
       field: field,
       bears: [],
       bees: [],
-      honey_drops: [%HoneyDrop{pos_x: 2, pos_y: 2}],
+      honey_drops: [],
       trees: spawn_trees()
     }
 
@@ -34,7 +34,7 @@ defmodule Game do
   def handle_info(:spawn_honey, %{honey_drops: honey_drops} = state) do
     new_honey_drops =
       if Enum.count(honey_drops) < @max_honey_drops do
-        spawn_honey_drop(honey_drops)
+        spawn_honey_drop(state)
       else
         honey_drops
       end
@@ -42,13 +42,20 @@ defmodule Game do
     {:noreply, %{state | honey_drops: new_honey_drops}}
   end
 
-  defp spawn_honey_drop(honey_drops) do
-    all_x = Enum.map(honey_drops, & &1.pos_x)
-    all_y = Enum.map(honey_drops, & &1.pos_y)
+  defp spawn_honey_drop(%{honey_drops: honey_drops, trees: trees}) do
+    all_x = Enum.map(honey_drops ++ trees, & &1.pos_x)
+    all_y = Enum.map(honey_drops ++ trees, & &1.pos_y)
     potential_x = Enum.to_list(0..@field_height) -- all_x
     potential_y = Enum.to_list(0..@field_width) -- all_y
 
-    [%HoneyDrop{pos_x: Enum.random(potential_x), pos_y: Enum.random(potential_y)} | honey_drops]
+    [
+      %HoneyDrop{
+        honey: Enum.random([1, 3, 5, 7]),
+        pos_x: Enum.random(potential_x),
+        pos_y: Enum.random(potential_y)
+      }
+      | honey_drops
+    ]
   end
 
   @impl true
@@ -238,11 +245,11 @@ defmodule Game do
   end
 
   defp honey_drop?(%{honey: honey} = bear, position, honey_drops) do
-    with %HoneyDrop{} = honey_drop <-
+    with %HoneyDrop{honey: dropped_honey} = honey_drop <-
            Enum.find(honey_drops, fn honey_drop ->
              {honey_drop.pos_x, honey_drop.pos_y} == position
            end) do
-      new_bear = %{bear | honey: honey + 1}
+      new_bear = %{bear | honey: honey + dropped_honey}
       new_honey_drops = honey_drops -- [honey_drop]
 
       {new_bear, new_honey_drops}
