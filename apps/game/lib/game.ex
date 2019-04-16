@@ -65,10 +65,15 @@ defmodule Game do
         _pid,
         %{bears: bears} = state
       ) do
-    %{pos_x: x, pos_y: y} = get_bear_from_list(id, bears)
-    position = {x, y}
-    viewport = create_viewport(position, state)
-    {:reply, viewport, state}
+    case get_bear_from_list(id, bears) do
+      %{pos_x: x, pos_y: y} ->
+        position = {x, y}
+        viewport = create_viewport(position, state)
+        {:reply, viewport, state}
+
+      nil ->
+        {:reply, [], state}
+    end
   end
 
   @impl true
@@ -103,15 +108,6 @@ defmodule Game do
   end
 
   @impl true
-  def handle_call({:stop, %Bear{} = bear}, _pid, state) do
-    %{bear | moving: false}
-
-    state = update_state_with(state, bear)
-
-    {:reply, bear, state}
-  end
-
-  @impl true
   def handle_call(
         {:claw, %Bear{honey: bear_honey, direction: direction, pos_x: x, pos_y: y} = bear},
         _pid,
@@ -119,8 +115,8 @@ defmodule Game do
       ) do
     {bear, state} =
       case target(direction, x, y, state) do
-        %Tree{honey: tree_honey} = tree ->
-          new_bear = %{bear | honey: bear_honey - 1, dead: @miliseconds_dead_screen}
+        %Tree{honey: tree_honey} = tree when tree_honey > 0 ->
+          new_bear = %{bear | honey: bear_honey + 1}
 
           new_state =
             state
@@ -136,7 +132,7 @@ defmodule Game do
           other_bear =
             if other_bear.honey < 1,
               do: %{other_bear | dead: @miliseconds_dead_screen},
-              else: bear
+              else: other_bear
 
           new_state =
             state
@@ -196,14 +192,7 @@ defmodule Game do
       Enum.find(trees, &(&1.pos_x == target_x and &1.pos_y == target_y))
   end
 
-  def update_state_with(%{bears: bears} = state, %Bear{honey: honey} = bear) do
-    bear =
-      if honey < 1,
-        do: %{bear | dead: @miliseconds_dead_screen},
-        else:
-          bear
-          |> IO.inspect()
-
+  def update_state_with(%{bears: bears} = state, bear = %Bear{}) do
     bears =
       Enum.map(bears, fn list_bear ->
         if list_bear.id == bear.id,

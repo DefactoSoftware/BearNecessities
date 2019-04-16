@@ -22,14 +22,13 @@ defmodule BearNecessitiesWeb.Game do
       |> assign(:pos_y, nil)
       |> assign(:field, field)
       |> assign(:players, players)
-      |> assign(:bear, %Bear{started: false})
+      |> assign(:bear, %Bear{started: false, display_name: "Player#{Enum.count(players)}"})
 
     {:ok, socket}
   end
 
   def handle_event("start", %{"player" => %{"display_name" => display_name}}, %{id: id} = socket) do
-    if connected?(socket), do: :timer.send_interval(50, self(), :update)
-
+    reference = set_updates(connected?(socket))
     bear = Player.start(display_name, id)
     viewport = ViewPort.get_viewport(id)
 
@@ -38,6 +37,7 @@ defmodule BearNecessitiesWeb.Game do
       |> assign(:id, id)
       |> assign(:viewport, viewport)
       |> assign(:pos_x, bear.pos_x)
+      |> assign(:reference, reference)
       |> assign(:pos_y, bear.pos_y)
       |> assign(:bear, bear)
 
@@ -64,7 +64,6 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def handle_event("key_move", _, %{id: id} = socket) do
-    Player.claw(id)
     {:noreply, socket}
   end
 
@@ -77,7 +76,12 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
-  def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: nil}}} = socket) do
+  def handle_info(:update, %{id: nil} = socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: nil, started: true}}} = socket)
+      when not is_nil(id) do
     players = Game.get_players()
     viewport = ViewPort.get_viewport(id)
     bear = Game.get_bear(id)
@@ -86,27 +90,70 @@ defmodule BearNecessitiesWeb.Game do
       socket
       |> assign(:viewport, viewport)
       |> assign(:players, players)
+      |> assign(:field, %Field{})
       |> assign(:bear, bear)
 
     {:noreply, socket}
   end
 
-  def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: dead} = bear}} = socket)
-      when dead > 0 do
-    IO.inspect(dead)
-    {:noreply, update(socket, :bear, fn bear -> %{bear | dead: bear.dead - 51} end)}
+  def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: nil, started: true}}} = socket)
+      when not is_nil(id) do
+    players = Game.get_players()
+    viewport = ViewPort.get_viewport(id)
+    bear = Game.get_bear(id)
+
+    socket =
+      socket
+      |> assign(:viewport, viewport)
+      |> assign(:players, players)
+      |> assign(:field, %Field{})
+      |> assign(:bear, bear)
+
+    {:noreply, socket}
   end
 
-  def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: dead} = bear}} = socket)
+  def handle_info(
+        :update,
+        %{id: id, assigns: %{bear: %Bear{dead: dead} = bear}} = socket
+      )
+      when not is_nil(dead) and dead > 0 do
+    socket = assign(socket, :bear, %{bear | dead: bear.dead - 51})
+    {:noreply, socket}
+  end
+
+  def handle_info(
+        :update,
+        %{id: id, assigns: %{reference: reference, bear: %Bear{dead: dead} = bear}} = socket
+      )
       when dead < 50 do
+    :timer.cancel(reference)
     Game.remove_bear(id)
-    {:noreply, update(socket, :bear, fn bear -> %{bear | started: false, dead: nil} end)}
+    players = Game.get_players()
+
+    socket =
+      socket
+      |> assign(:bear, %{bear | started: false, dead: nil})
+      |> assign(:viewport, [])
+      |> assign(:players, players)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(:update, socket) do
+    {:noreply, socket}
   end
 
   def terminate(reason, %{id: id} = socket) do
     Game.remove_bear(id)
 
     reason
+  end
+
+  def set_updates(false), do: nil
+
+  def set_updates(true) do
+    {:ok, {:interval, ref}} = :timer.send_interval(50, self(), :update)
+    ref
   end
 
   def move_to("ArrowRight"), do: :right_arrow

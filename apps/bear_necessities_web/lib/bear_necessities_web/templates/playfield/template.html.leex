@@ -36,7 +36,7 @@
     <%= form_tag "#", [phx_submit: :start] do %>
       <%= label(:player, :display_name, "What is Your Name?") %>
       <br><br><br>
-      <%= text_input(:player, :display_name, value: "Player1", class: "input") %>
+      <%= text_input(:player, :display_name, value: @bear.display_name, class: "input") %>
 
       <%= submit("Start", phx_disable_with: "Starting...", class: "button red") %>
     <% end %>
