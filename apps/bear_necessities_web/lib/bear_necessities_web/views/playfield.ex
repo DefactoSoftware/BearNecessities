@@ -13,7 +13,8 @@ defmodule BearNecessitiesWeb.Playfield do
       %Bear{id: id, direction: direction} when id == player_id -> "bear self #{direction}"
       %Bear{direction: direction} -> "bear opponent #{direction}"
       %Tree{} -> "tree"
-      nil -> nil
+      %HoneyDrop{} -> "honey"
+      _ -> nil
     end
   end
 end
