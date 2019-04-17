@@ -115,7 +115,7 @@ defmodule Game do
     bear = %{bear | moving: false}
     state = update_state_with(state, bear)
 
-    {:reply, bear, %{state | honey_drops: honey_drops}}
+    {:reply, bear, state}
   end
 
   @impl true
