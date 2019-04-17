@@ -7,6 +7,7 @@ defmodule Game do
   @max_honey_drops 8
   @field_height 40
   @field_width 40
+  @miliseconds_dead_screen 1000
 
   defstruct [:field, :bears, :bees, :trees, :honey_drops]
 
@@ -64,10 +65,15 @@ defmodule Game do
         _pid,
         %{bears: bears} = state
       ) do
-    %{pos_x: x, pos_y: y} = get_bear_from_list(id, bears)
-    position = {x, y}
-    viewport = create_viewport(position, state)
-    {:reply, viewport, state}
+    case get_bear_from_list(id, bears) do
+      %{pos_x: x, pos_y: y} ->
+        position = {x, y}
+        viewport = create_viewport(position, state)
+        {:reply, viewport, state}
+
+      nil ->
+        {:reply, [], state}
+    end
   end
 
   @impl true
@@ -121,11 +127,17 @@ defmodule Game do
 
         %Bear{honey: other_bear_honey} = other_bear when other_bear_honey > 0 ->
           new_bear = %{bear | honey: bear_honey + 1}
+          other_bear = %{other_bear | honey: other_bear_honey - 1}
+
+          other_bear =
+            if other_bear.honey < 1,
+              do: %{other_bear | dead: @miliseconds_dead_screen},
+              else: other_bear
 
           new_state =
             state
             |> update_state_with(new_bear)
-            |> update_state_with(%{other_bear | honey: other_bear_honey - 1})
+            |> update_state_with(other_bear)
 
           {new_bear, new_state}
 
@@ -352,6 +364,9 @@ defmodule Game do
     create_tree(all_x, all_y)
   end
 
+  @doc """
+  creates a tree on and returns a list of trees
+  """
   defp create_tree(possible_x, possible_y, trees \\ []) do
     if Enum.count(trees) < @number_of_trees do
       x = Enum.random(possible_x)
@@ -367,8 +382,4 @@ defmodule Game do
   def handle_info(pid, state) do
     {:noreply, state}
   end
-
-  # def handle_info({:DOWN, _, :process, _, reason}, _) do
-  #   {:stop, reason, []}
-  # end
 end

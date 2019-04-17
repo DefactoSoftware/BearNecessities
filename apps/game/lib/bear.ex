@@ -2,6 +2,7 @@ defmodule Bear do
   defstruct id: nil,
             pos_x: nil,
             pos_y: nil,
+            dead: nil,
             honey: nil,
             display_name: nil,
             started: false,
