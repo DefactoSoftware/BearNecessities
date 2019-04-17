@@ -93,18 +93,29 @@ defmodule Game do
         _pid,
         %{honey_drops: honey_drops} = state
       ) do
+    bear = %{bear | direction: direction, moving: true}
+
     {bear, honey_drops} =
       if move_to?(position, id, state) do
-        {bear, honey_drops} = honey_drop?(bear, position, honey_drops)
-        new_bear = %{bear | pos_x: pos_x, pos_y: pos_y, direction: direction}
-        {new_bear, honey_drops}
+        {bear, honey_drops} = fetch_honey_drop(bear, position, honey_drops)
+        bear = %{bear | pos_x: pos_x, pos_y: pos_y}
+        {bear, honey_drops}
       else
-        {%{bear | direction: direction}, honey_drops}
+        {bear, honey_drops}
       end
 
     state = update_state_with(state, bear)
 
     {:reply, bear, %{state | honey_drops: honey_drops}}
+  end
+
+  @impl true
+  def handle_call({:stop, id}, _pid, %{bears: bears} = state) do
+    bear = get_bear_from_list(id, bears)
+    bear = %{bear | moving: false}
+    state = update_state_with(state, bear)
+
+    {:reply, bear, state}
   end
 
   @impl true
@@ -258,7 +269,7 @@ defmodule Game do
     Task.await(id_bears) and Task.await(id_trees) and pos_within_field?(position, field)
   end
 
-  defp honey_drop?(%{honey: honey} = bear, position, honey_drops) do
+  defp fetch_honey_drop(%{honey: honey} = bear, position, honey_drops) do
     with %HoneyDrop{honey: dropped_honey} = honey_drop <-
            Enum.find(honey_drops, fn honey_drop ->
              {honey_drop.pos_x, honey_drop.pos_y} == position
