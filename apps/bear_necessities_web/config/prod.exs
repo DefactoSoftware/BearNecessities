@@ -20,6 +20,11 @@ config :bear_necessities_web, BearNecessitiesWeb.Endpoint,
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
+  check_origin: [
+    "https://bear-necessities.herokuapp.com",
+    "https://unbearable.nl",
+    "https://www.unbearable.nl"
+  ],
   live_view: [
     signing_salt: Map.fetch!(System.get_env(), "LIVE_VIEW_SALT")
   ]
