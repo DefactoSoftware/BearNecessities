@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+var SpritesmithPlugin = require("webpack-spritesmith");
 
 module.exports = (env, options) => ({
   optimization: {
@@ -30,12 +31,31 @@ module.exports = (env, options) => ({
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"]
-      }
+        use: [MiniCssExtractPlugin.loader, "style-loader", "css-loader"]
+      },
+      {test: /\.gif$/, use: [
+          "file-loader?name=i/[hash].[ext]"
+      ]}
     ]
+  },
+  resolve: {
+    modules: ["node_modules", "spritesmith-generated"]
   },
   plugins: [
     new MiniCssExtractPlugin({ filename: "../css/app.css" }),
-    new CopyWebpackPlugin([{ from: "static/", to: "../" }])
+    new CopyWebpackPlugin([{ from: "static/", to: "../" }]),
+    new SpritesmithPlugin({
+      src: {
+        cwd: path.resolve(__dirname, "static/images/bear"),
+        glob: "*.gif"
+      },
+      target: {
+        image: path.resolve(__dirname, "static/spritesmith-generated/sprite.gif"),
+        css: path.resolve(__dirname, "css/spritesmith-generated/sprite.css")
+      },
+      apiOptions: {
+        cssImageRef: "~sprite.gif"
+      }
+    })
   ]
 });
