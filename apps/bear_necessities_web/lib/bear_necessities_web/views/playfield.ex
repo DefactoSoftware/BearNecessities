@@ -10,15 +10,21 @@ defmodule BearNecessitiesWeb.Playfield do
 
   def item_class(item, player_id) do
     case item do
-      %Bear{id: id, direction: direction, moving: moving} when id == player_id ->
+      %Bear{id: id, direction: direction, moving: moving, dead: nil} when id == player_id ->
         ["bear", "self", direction]
         |> bear_idle_class(moving)
         |> Enum.join(" ")
 
-      %Bear{direction: direction, moving: moving} ->
+      %Bear{id: id, direction: direction, dead: _} when id == player_id ->
+        "bear dead"
+
+      %Bear{direction: direction, moving: moving, dead: nil} ->
         ["bear", "opponent", direction]
         |> bear_idle_class(moving)
         |> Enum.join(" ")
+
+      %Bear{direction: direction, dead: _dead} ->
+        "bear opponent dead "
 
       %Tree{} ->
         "tree"

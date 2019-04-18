@@ -9,8 +9,10 @@
       <button phx-click="down" class="button small">down</button>
       <button phx-click="up" class="button small">up</button>
       <button phx-click="right" class="button small">right</button>
-      <span phx-keydown="key_move" phx-target="window"></span>
-      <span phx-keyup="key_up" phx-target="window"></span>
+      <%= if is_nil(@bear.dead) do %>
+        <span phx-keydown="key_move" phx-target="window"></span>
+        <span phx-keyup="key_up" phx-target="window"></span>
+      <% end %>
     </div>
 
     <div class="map">

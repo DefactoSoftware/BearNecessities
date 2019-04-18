@@ -74,6 +74,10 @@ Items that are displayed inside tiles (bears, trees, etc)
 .bear.opponent {
   filter: grayscale(60%);
 }
+
+.bear.dead {
+  background-image: url("/images/bear/dead.gif");
+}
 .bear.up {
   background-image: url("/images/bear/up.gif");
 }
