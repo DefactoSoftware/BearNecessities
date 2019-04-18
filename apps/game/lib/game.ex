@@ -7,7 +7,7 @@ defmodule Game do
   @max_honey_drops 8
   @field_height 40
   @field_width 40
-  @miliseconds_dead_screen 3000
+  @miliseconds_dead_screen 2900
 
   defstruct [:field, :bears, :bees, :trees, :honey_drops]
 
