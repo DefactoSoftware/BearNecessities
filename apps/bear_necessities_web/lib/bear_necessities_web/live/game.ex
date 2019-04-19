@@ -46,6 +46,7 @@ defmodule BearNecessitiesWeb.Game do
       |> assign(:viewport, viewport)
       |> assign(:pos_x, bear.pos_x)
       |> assign(:reference, reference)
+      |> assign(:autoplay, false)
       |> assign(:pos_y, bear.pos_y)
       |> assign(:bear, bear)
 
@@ -57,7 +58,11 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def handle_event("sounds_on", _, %{id: id} = socket) do
-    socket = assign(socket, :play_sounds, true)
+    socket =
+      socket
+      |> assign(:play_sounds, true)
+      |> assign(:autoplay, true)
+
     {:noreply, socket}
   end
 
@@ -110,22 +115,7 @@ defmodule BearNecessitiesWeb.Game do
       socket
       |> assign(:viewport, viewport)
       |> assign(:players, players)
-      |> assign(:field, %Field{})
-      |> assign(:bear, bear)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: nil, started: true}}} = socket)
-      when not is_nil(id) do
-    players = Game.get_players()
-    viewport = ViewPort.get_viewport(id)
-    bear = Game.get_bear(id)
-
-    socket =
-      socket
-      |> assign(:viewport, viewport)
-      |> assign(:players, players)
+      |> assign(:autoplay, false)
       |> assign(:field, %Field{})
       |> assign(:bear, bear)
 
