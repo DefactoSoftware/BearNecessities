@@ -90,8 +90,17 @@ Items that are displayed inside tiles (bears, trees, etc)
 .bear.down {
   background-image: url("/images/bear/down.gif");
 }
-.bear.idle {
-  background-image: url("/images/bear/idle.gif");
+.bear.up.idle {
+  background-image: url("/images/bear/up-idle.gif");
+}
+.bear.left.idle {
+  background-image: url("/images/bear/left-idle.gif");
+}
+.bear.right.idle {
+  background-image: url("/images/bear/right-idle.gif");
+}
+.bear.down.idle {
+  background-image: url("/images/bear/down-idle.gif");
 }
 
 .tree {
