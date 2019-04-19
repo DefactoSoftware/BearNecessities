@@ -8,10 +8,10 @@
 
 ## Install
 
-Run `mix deps.get` in the main dir
-Run `mix ecto.create` in the main dir
-Run `yarn` in `apps/bear_necessities_web/assets`
+* Run `mix deps.get` in the main dir
+* Run `mix ecto.create` in the main dir
+* Run `yarn` in `apps/bear_necessities_web/assets`
 
 ## Running
 
-Start with mix phx.server, go to https://localhost:4000/game and wait for the assets to compile
+Start with mix phx.server, go to https://localhost:4000/ and wait for the assets to compile
