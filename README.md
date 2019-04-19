@@ -6,6 +6,7 @@
 | ![front-attack](https://user-images.githubusercontent.com/801034/56365798-feb81400-61f1-11e9-8bbf-c565e847701b.gif) | ![left-attack](https://user-images.githubusercontent.com/801034/56423160-23bc8d80-62ab-11e9-8725-fe49fe3f050b.gif) | ![back-attack](https://user-images.githubusercontent.com/801034/56423159-23bc8d80-62ab-11e9-9dab-cdc94193cb8f.gif) |
 
 | Death |
+| - |
 | ![ded](https://user-images.githubusercontent.com/801034/56366001-6a01e600-61f2-11e9-8a5e-b5107cef87bd.gif) |
 
 ## Install
