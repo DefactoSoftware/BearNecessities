@@ -116,22 +116,6 @@ defmodule BearNecessitiesWeb.Game do
       socket
       |> assign(:viewport, viewport)
       |> assign(:players, players)
-      |> assign(:field, %Field{})
-      |> assign(:bear, bear)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: nil, started: true}}} = socket)
-      when not is_nil(id) do
-    players = Game.get_players()
-    viewport = ViewPort.get_viewport(id)
-    bear = Game.get_bear(id)
-
-    socket =
-      socket
-      |> assign(:viewport, viewport)
-      |> assign(:players, players)
       |> assign(:autoplay, false)
       |> assign(:field, %Field{})
       |> assign(:bear, bear)
