@@ -1,9 +1,10 @@
 <%= if @play_sounds do %>
   <button phx-click="sounds_off" class="button small">Mute</button>
-  <audio src="<%= Routes.static_path(BearNecessitiesWeb.Endpoint, "/sound/game-sound.mp3") %>"  type="audio/mpeg" autoplay loop> </audio>
+  <audio src="<%= Routes.static_path(BearNecessitiesWeb.Endpoint, "/sound/game-sound.mp3") %>"  type="audio/mpeg" <%= if @autoplay do %> autoplay <% end %> loop> </audio>
 <% else %>
   <button phx-click="sounds_on" class="button small">Sound</button>
 <% end %>
+
 <%= if @bear.started do %>
 
   <div>
@@ -51,5 +52,4 @@
   </div>
 
 <% end %>
-
 <%= BearNecessitiesWeb.Playfield.render("scoreboard.html", assigns) %>
