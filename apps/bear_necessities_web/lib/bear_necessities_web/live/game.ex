@@ -82,9 +82,8 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def handle_event("key_up", key, %{id: id} = socket)
-      when key in @action_keys do
-    Bear.stop(id)
-
+      when key in @arrow_keys do
+     Bear.stop(id)
     {:noreply, socket}
   end
 
