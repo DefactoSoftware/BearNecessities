@@ -2,7 +2,14 @@ defmodule BearNecessitiesWeb.Game do
   use Phoenix.LiveView
   require Logger
 
-  @action_keys ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"]
+  @arrow_keys ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"]
+  @action_map %{
+    "right" => "ArrowRight",
+    "left" => "ArrowLeft",
+    "up" => "ArrowUp",
+    "down" => "ArrowDown"
+  }
+  @action_keys Map.keys(@action_map)
 
   alias BearNecessitiesWeb.Playfield
 
@@ -48,17 +55,14 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
+  def handle_event(direction, _, %{id: id} = socket) when direction in @action_keys do
+    socket = move_player(id, Map.get(@action_map, direction), socket)
+    {:noreply, socket}
+  end
+
   def handle_event("key_move", key, %{id: id} = socket)
-      when key in @action_keys do
-    bear = Player.move(id, move_to(key))
-    viewport = ViewPort.get_viewport(id)
-
-    socket =
-      socket
-      |> assign(:pos_x, bear.pos_x)
-      |> assign(:pos_y, bear.pos_y)
-      |> assign(:viewport, viewport)
-
+      when key in @arrow_keys do
+    socket = move_player(id, key, socket)
     {:noreply, socket}
   end
 
@@ -160,6 +164,17 @@ defmodule BearNecessitiesWeb.Game do
   def set_updates(true) do
     {:ok, {:interval, ref}} = :timer.send_interval(50, self(), :update)
     ref
+  end
+
+  def move_player(id, direction, socket) do
+    bear = Player.move(id, move_to(direction))
+
+    viewport = ViewPort.get_viewport(id)
+
+    socket
+    |> assign(:pos_x, bear.pos_x)
+    |> assign(:pos_y, bear.pos_y)
+    |> assign(:viewport, viewport)
   end
 
   def move_to("ArrowRight"), do: :right_arrow
