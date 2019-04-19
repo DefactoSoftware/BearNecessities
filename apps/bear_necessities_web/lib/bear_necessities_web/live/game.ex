@@ -27,6 +27,7 @@ defmodule BearNecessitiesWeb.Game do
       |> assign(:viewport, [])
       |> assign(:pos_x, nil)
       |> assign(:pos_y, nil)
+      |> assign(:play_sounds, false)
       |> assign(:field, field)
       |> assign(:players, players)
       |> assign(:bear, %Bear{started: false, display_name: "Player#{Enum.count(players)}"})
@@ -52,6 +53,16 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def handle_event(_, "Meta", socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("sounds_on", _, %{id: id} = socket) do
+    socket = assign(socket, :play_sounds, true)
+    {:noreply, socket}
+  end
+
+  def handle_event("sounds_off", _, %{id: id} = socket) do
+    socket = assign(socket, :play_sounds, false)
     {:noreply, socket}
   end
 
