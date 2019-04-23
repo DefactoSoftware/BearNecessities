@@ -7,7 +7,8 @@ defmodule Bear do
             display_name: nil,
             started: false,
             direction: :down,
-            moving: false
+            moving: false,
+            clawing: false
 
   def create_bear(%{height: height, width: width}, id, display_name, started) do
     pos_x = Enum.random(0..height)

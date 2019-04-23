@@ -112,7 +112,7 @@ defmodule Game do
   @impl true
   def handle_call({:stop, id}, _pid, %{bears: bears} = state) do
     bear = get_bear_from_list(id, bears)
-    bear = %{bear | moving: false}
+    bear = %{bear | moving: false, clawing: false}
     state = update_state_with(state, bear)
 
     {:reply, bear, state}
@@ -124,6 +124,8 @@ defmodule Game do
         _pid,
         state
       ) do
+    bear = %{bear | clawing: true}
+
     {bear, state} =
       case target(direction, x, y, state) do
         %Tree{honey: tree_honey} = tree when tree_honey > 0 ->
@@ -153,13 +155,13 @@ defmodule Game do
           {new_bear, new_state}
 
         %Tree{honey: 0} ->
-          {bear, state}
+          {bear, update_state_with(state, bear)}
 
         %Bear{honey: 0} ->
-          {bear, state}
+          {bear, update_state_with(state, bear)}
 
         _ ->
-          {bear, state}
+          {bear, update_state_with(state, bear)}
       end
 
     {:reply, bear, state}
