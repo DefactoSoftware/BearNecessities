@@ -1,0 +1,14 @@
+@import "../node_modules/normalize.css/normalize.css";
+
+body {
+  background: #363636;
+  color: white;
+  font-family: "Press Start 2P", Courier, monospace;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.8);
+  margin: 30px;
+  font-size: 16px;
+}
+
+h1 {
+  text-shadow: 6px 6px rgba(0, 0, 0, 0.8);
+}

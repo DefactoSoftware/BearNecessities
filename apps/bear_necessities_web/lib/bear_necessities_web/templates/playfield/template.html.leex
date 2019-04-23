@@ -7,7 +7,7 @@
 
 <%= if @bear.started do %>
 
-  <div>
+  <div class="game">
     <div class="gui">
       <h1>Hello, <%= @bear.display_name %></h1>
       <span>X: <%= @pos_x %></span>
@@ -40,7 +40,7 @@
   <div class="lobby">
     <h1>Bear<br>Necessities</h1>
 
-    <%= img_tag(Routes.static_path(BearNecessitiesWeb.Endpoint, "/images/bear/down.gif"), class: "player") %>
+    <%= img_tag(Routes.static_path(BearNecessitiesWeb.Endpoint, "/images/bear/down.gif"), class: "player-image") %>
 
     <%= form_tag "#", [phx_submit: :start] do %>
       <%= label(:player, :display_name, "What is Your Name?") %>
@@ -52,26 +52,26 @@
   </div>
 
   <div class="load-gifs">
-    <div class="tile grass-1"> </div>
-    <div class="tile grass-2"> </div>
-    <div class="tile grass-3"> </div>
-    <div class="tile grass-4"> </div>
-    <div class="tile nothing"> </div>
-    <div class="honey"> </div>
-    <div class="bear dead"> </div>
-    <div class="bear up"> </div>
-    <div class="bear left"> </div>
-    <div class="bear down"> </div>
-    <div class="bear right"> </div>
-    <div class="bear up idle"> </div>
-    <div class="bear left idle"> </div>
-    <div class="bear down idle"> </div>
-    <div class="bear right idle"> </div>
-    <div class="bear up clawing"> </div>
-    <div class="bear left clawing"> </div>
-    <div class="bear down clawing"> </div>
-    <div class="bear right clawing"> </div>
-    <div class="tree"> </div>
+    <div class="tile grass-1"></div>
+    <div class="tile grass-2"></div>
+    <div class="tile grass-3"></div>
+    <div class="tile grass-4"></div>
+    <div class="tile nothing"></div>
+    <div class="honey"></div>
+    <div class="bear dead"></div>
+    <div class="bear up"></div>
+    <div class="bear left"></div>
+    <div class="bear down"></div>
+    <div class="bear right"></div>
+    <div class="bear up idle"></div>
+    <div class="bear left idle"></div>
+    <div class="bear down idle"></div>
+    <div class="bear right idle"></div>
+    <div class="bear up clawing"></div>
+    <div class="bear left clawing"></div>
+    <div class="bear down clawing"></div>
+    <div class="bear right clawing"></div>
+    <div class="tree"></div>
   </div>
 <% end %>
 <%= BearNecessitiesWeb.Playfield.render("scoreboard.html", assigns) %>

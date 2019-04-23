@@ -1,143 +1,149 @@
-.gui {
-  text-align: center;
-  margin-bottom: 30px;
-}
+.game {
+  .gui {
+    text-align: center;
+    margin-bottom: 30px;
+  }
 
-.map {
-  border: 6px solid rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  width: 800px;
-  height: 800px;
-  text-align: center;
-  margin: 0 auto;
-}
+  .map {
+    border: 6px solid rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    height: 800px;
+    text-align: center;
+    margin: 0 auto;
+  }
 
-.row {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  justify-content: space-evenly;
-  flex: 1;
-}
+  .row {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    justify-content: space-evenly;
+    flex: 1;
+  }
 
-.load-gifs {
-  height: 0;
-  width: 0;
-  z-index: -1;
-}
+  /*
+  Tiles of map (terain, border)
+  */
+  .tile {
+    background-size: cover;
+    image-rendering: pixelated;
+    height: 100%;
+    flex: 1;
 
-/* Tiles of map (terain, border) */
-.tile {
-  background-size: cover;
-  image-rendering: pixelated;
-  height: 100%;
-  flex: 1;
-}
+    &.grass {
+      &-1 {
+        background-color: #44d873;
+        background-image: url("/images/terain/grass-1.gif");
+      }
+      &-2 {
+        background-color: #44d873;
+        background-image: url("/images/terain/grass-2.gif");
+      }
+      &-3 {
+        background-color: #44d873;
+        background-image: url("/images/terain/grass-3.gif");
+      }
+      &-4 {
+        background-color: #44d873;
+        background-image: url("/images/terain/grass-4.gif");
+      }
+    }
 
-.tile.grass-1 {
-  background-color: #44d873;
-  background-image: url("/images/terain/grass-1.gif");
-}
+    &.nothing {
+      background-color: gray;
+      background-image: url("/images/terain/nothing.gif");
+    }
+  }
 
-.tile.grass-2 {
-  background-color: #44d873;
-  background-image: url("/images/terain/grass-2.gif");
-}
+  /*
+  Items that are displayed inside tiles (bears, trees, honey, etc)
+  */
+  .item {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    height: 100%;
+    width: 100%;
 
-.tile.grass-3 {
-  background-color: #44d873;
-  background-image: url("/images/terain/grass-3.gif");
-}
+    /*
+    Honey
+    */
+    &.honey {
+      background-image: url("/images/honey/drop.gif");
+      background-size: 75%;
+    }
 
-.tile.grass-4 {
-  background-color: #44d873;
-  background-image: url("/images/terain/grass-4.gif");
-}
+    /*
+    Trees
+    */
+    &.tree {
+      background-image: url("/images/trees/tree-1.gif");
+    }
 
-.tile.nothing {
-  background-color: gray;
-  background-image: url("/images/terain/nothing.gif");
-}
+    /*
+    Bears
+    */
+    &.bear {
+      &.self {
+      }
 
-/*
-Items that are displayed inside tiles (bears, trees, etc)
-*/
-.item {
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-  height: 100%;
-  width: 100%;
-}
+      &.opponent {
+        filter: grayscale(60%);
+      }
 
-/* Honey */
-.honey {
-  background-image: url("/images/honey/drop.gif");
-  background-repeat: no-repeat;
-  background-size: 61px;
-}
+      &.dead {
+        background-image: url("/images/bear/dead.gif");
+      }
 
-/* Bear (player and opponents) */
-.bear.self {}
+      &.up {
+        background-image: url("/images/bear/up.gif");
 
-.bear.opponent {
-  filter: grayscale(60%);
-}
+        &.idle {
+          background-image: url("/images/bear/up-idle.gif");
+        }
 
-.bear.dead {
-  background-image: url("/images/bear/dead.gif");
-}
+        &.clawing {
+          background-image: url("/images/bear/up-claw.gif");
+        }
+      }
 
-.bear.up {
-  background-image: url("/images/bear/up.gif");
-}
+      &.left {
+        background-image: url("/images/bear/left.gif");
 
-.bear.left {
-  background-image: url("/images/bear/left.gif");
-}
+        &.idle {
+          background-image: url("/images/bear/left-idle.gif");
+        }
 
-.bear.right {
-  background-image: url("/images/bear/right.gif");
-}
+        &.clawing {
+          background-image: url("/images/bear/left-claw.gif");
+        }
+      }
 
-.bear.down {
-  background-image: url("/images/bear/down.gif");
-}
+      &.right {
+        background-image: url("/images/bear/right.gif");
 
-.bear.up.idle {
-  background-image: url("/images/bear/up-idle.gif");
-}
+        &.idle {
+          background-image: url("/images/bear/right-idle.gif");
+        }
 
-.bear.left.idle {
-  background-image: url("/images/bear/left-idle.gif");
-}
+        &.clawing {
+          background-image: url("/images/bear/right-claw.gif");
+        }
+      }
 
-.bear.right.idle {
-  background-image: url("/images/bear/right-idle.gif");
-}
+      &.down {
+        background-image: url("/images/bear/down.gif");
 
-.bear.down.idle {
-  background-image: url("/images/bear/down-idle.gif");
-}
+        &.idle {
+          background-image: url("/images/bear/down-idle.gif");
+        }
 
-.bear.clawing.up {
-  background-image: url("/images/bear/up-claw.gif");
-}
-
-.bear.clawing.left {
-  background-image: url("/images/bear/left-claw.gif");
-}
-
-.bear.clawing.right {
-  background-image: url("/images/bear/right-claw.gif");
-}
-
-.bear.clawing.down {
-  background-image: url("/images/bear/down-claw.gif");
-}
-
-.tree {
-  background-image: url("/images/trees/tree-1.gif");
+        &.clawing {
+          background-image: url("/images/bear/down-claw.gif");
+        }
+      }
+    }
+  }
 }
