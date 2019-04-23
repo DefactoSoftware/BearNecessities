@@ -21,6 +21,12 @@
   flex: 1;
 }
 
+.load-gifs {
+  height: 0;
+  width: 0;
+  z-index: -1;
+}
+
 /* Tiles of map (terain, border) */
 .tile {
   background-size: cover;
