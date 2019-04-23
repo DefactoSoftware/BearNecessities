@@ -88,12 +88,16 @@ defmodule BearNecessitiesWeb.Game do
 
   def handle_event("key_up", key, %{id: id} = socket)
       when key in @arrow_keys do
-     Bear.stop(id)
+    Bear.stop(id)
     {:noreply, socket}
   end
 
   def handle_event("key_up", " ", %{id: id} = socket) do
-    Player.claw(id)
+    socket =
+      socket
+      |> assign(:bear, Player.claw(id))
+      |> assign(:viewport, ViewPort.get_viewport(id))
+
     {:noreply, socket}
   end
 
@@ -162,7 +166,7 @@ defmodule BearNecessitiesWeb.Game do
   def set_updates(false), do: nil
 
   def set_updates(true) do
-    {:ok, {:interval, ref}} = :timer.send_interval(50, self(), :update)
+    {:ok, ref} = :timer.send_interval(50, self(), :update)
     ref
   end
 
