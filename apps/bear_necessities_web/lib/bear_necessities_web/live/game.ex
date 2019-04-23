@@ -37,7 +37,7 @@ defmodule BearNecessitiesWeb.Game do
 
   def handle_event("start", %{"player" => %{"display_name" => display_name}}, %{id: id} = socket) do
     reference = set_updates(connected?(socket))
-    bear = Player.start(display_name, id)
+    {player_pid, bear} = Player.start(display_name, id)
     viewport = ViewPort.get_viewport(id)
 
     socket =
@@ -49,6 +49,7 @@ defmodule BearNecessitiesWeb.Game do
       |> assign(:autoplay, false)
       |> assign(:pos_y, bear.pos_y)
       |> assign(:bear, bear)
+      |> assign(:player_pid, player_pid)
 
     {:noreply, socket}
   end
@@ -92,10 +93,10 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
-  def handle_event("key_up", " ", %{id: id} = socket) do
+  def handle_event("key_up", " ", %{id: id, assigns: %{player_pid: player_pid}} = socket) do
     socket =
       socket
-      |> assign(:bear, Player.claw(id))
+      |> assign(:bear, Player.claw(player_pid, id))
       |> assign(:viewport, ViewPort.get_viewport(id))
 
     {:noreply, socket}
@@ -170,8 +171,8 @@ defmodule BearNecessitiesWeb.Game do
     ref
   end
 
-  def move_player(id, direction, socket) do
-    bear = Player.move(id, move_to(direction))
+  def move_player(id, direction, %{assigns: %{player_pid: player_pid}} = socket) do
+    bear = Player.move(player_pid, id, move_to(direction))
 
     viewport = ViewPort.get_viewport(id)
 

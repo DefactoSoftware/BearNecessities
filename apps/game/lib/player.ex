@@ -8,7 +8,7 @@ defmodule Player do
   defstruct [:id, :claw, :timer_pid]
 
   def start_link(default) when is_list(default) do
-    GenServer.start_link(__MODULE__, default, name: __MODULE__)
+    GenServer.start_link(__MODULE__, default)
   end
 
   @impl true
@@ -72,16 +72,18 @@ defmodule Player do
     {:noreply, state}
   end
 
-  def move(player_id, way) do
-    GenServer.call(Player, {:action, way, player_id})
+  def move(pid, player_id, way) do
+    GenServer.call(pid, {:action, way, player_id})
   end
 
-  def claw(player_id) do
-    GenServer.call(Player, {:claw, player_id})
+  def claw(pid, player_id) do
+    GenServer.call(pid, {:claw, player_id})
   end
 
   def start(display_name, id) do
-    Player.start_link(id: id)
-    Game.create_bear(display_name: display_name, id: id, started: true)
+    {:ok, pid} = Player.start_link(id: id)
+    bear = Game.create_bear(display_name: display_name, id: id, started: true)
+
+    {pid, bear}
   end
 end
