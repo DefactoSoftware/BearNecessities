@@ -10,12 +10,12 @@
   image-rendering: pixelated;
   background-size: 20%;
   padding: 30px;
-}
 
-.lobby h1 {
-  font-size: 3em;
-}
+  h1 {
+    font-size: 3em;
+  }
 
-.lobby .player {
-  width: 200px;
+  .player-image {
+    width: 200px;
+  }
 }
