@@ -1,4 +1,4 @@
-defmodule Game do
+defmodule GameServer do
   use GenServer
 
   @vertical_view_distance 5
@@ -20,7 +20,7 @@ defmodule Game do
     field = Field.create_field(@field_height, @field_width)
     :timer.send_interval(3000, self(), :spawn_honey)
 
-    game = %Game{
+    game = %GameServer{
       field: field,
       bears: [],
       bees: [],
@@ -83,7 +83,9 @@ defmodule Game do
         state
       ) do
     field = Map.get(state, :field)
+
     bear = Bear.create_bear(field, id, display_name, started)
+
     {:reply, bear, %{state | bears: [bear | Map.get(state, :bears)]}}
   end
 
@@ -174,7 +176,7 @@ defmodule Game do
   end
 
   @impl true
-  def handle_call({:get_field, id}, _pid, %{field: field} = state) do
+  def handle_call({:get_field, _}, _pid, %{field: field} = state) do
     {:reply, field, state}
   end
 
@@ -228,15 +230,15 @@ defmodule Game do
   end
 
   def move(bear, direction, position) do
-    GenServer.call(Game, {:move, bear, direction, position})
+    GenServer.call(GameServer, {:move, bear, direction, position})
   end
 
   def claw(bear) do
-    GenServer.call(Game, {:claw, bear})
+    GenServer.call(GameServer, {:claw, bear})
   end
 
   def get_bear(id) do
-    GenServer.call(Game, {:get_bear, id})
+    GenServer.call(GameServer, {:get_bear, id})
   end
 
   defp get_bear_from_list(id, bears) do
@@ -248,11 +250,7 @@ defmodule Game do
   end
 
   def get_field(id) do
-    GenServer.call(Game, {:get_field, id})
-  end
-
-  defp view_elements({x, y}, bears) do
-    Enum.filter(bears, &(&1.pos_x < x + @horizontal_field_of_view))
+    GenServer.call(GameServer, {:get_field, id})
   end
 
   defp move_to?(position, id, %{trees: trees, bears: bears, field: field}) do
@@ -286,12 +284,15 @@ defmodule Game do
     end
   end
 
-  def pos_within_field?({pos_x, pos_y} = position, %{height: height, width: width}) do
+  def pos_within_field?({pos_x, pos_y}, %{height: height, width: width}) do
     pos_x >= 0 and pos_y >= 0 and pos_x <= height and pos_y <= width
   end
 
   def create_bear(display_name: display_name, id: id, started: started) do
-    GenServer.call(Game, {:create_bear, display_name: display_name, id: id, started: started})
+    GenServer.call(
+      GameServer,
+      {:create_bear, display_name: display_name, id: id, started: started}
+    )
   end
 
   def get_from_list_task({item_x, item_y}, list) do
@@ -306,11 +307,11 @@ defmodule Game do
 
   def item_from_list({row, column}, list) do
     list
-    |> Enum.filter(fn %{pos_x: x, pos_y: y} = item -> x == row and y == column end)
+    |> Enum.filter(fn %{pos_x: x, pos_y: y} -> x == row and y == column end)
     |> List.last()
   end
 
-  def create_viewport({bear_x, bear_y} = position, %Game{
+  def create_viewport({bear_x, bear_y} = position, %GameServer{
         field: field,
         bears: bears,
         trees: trees,
@@ -360,14 +361,14 @@ defmodule Game do
   end
 
   def get_players() do
-    GenServer.call(Game, :get_players)
+    GenServer.call(GameServer, :get_players)
   end
 
   @doc """
   This will remove the bear from the game, only use this when player is disconnected. It is a cast and will not return return anything.
   """
   def remove_bear(id) do
-    GenServer.cast(Game, {:remove_bear, id})
+    GenServer.cast(GameServer, {:remove_bear, id})
   end
 
   defp spawn_trees() do
@@ -390,9 +391,5 @@ defmodule Game do
     else
       trees
     end
-  end
-
-  def handle_info(pid, state) do
-    {:noreply, state}
   end
 end

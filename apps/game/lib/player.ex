@@ -82,7 +82,7 @@ defmodule Player do
 
   def start(display_name, id) do
     {:ok, pid} = Player.start_link(id: id)
-    bear = Game.create_bear(display_name: display_name, id: id, started: true)
+    bear = GameServer.create_bear(display_name: display_name, id: id, started: true)
 
     {pid, bear}
   end

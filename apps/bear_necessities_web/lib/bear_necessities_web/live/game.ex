@@ -18,8 +18,8 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def mount(_session, %{id: id} = socket) do
-    field = Game.get_field(id)
-    players = Game.get_players()
+    field = GameServer.get_field(id)
+    players = GameServer.get_players()
 
     socket =
       socket
@@ -112,9 +112,9 @@ defmodule BearNecessitiesWeb.Game do
 
   def handle_info(:update, %{id: id, assigns: %{bear: %Bear{dead: nil, started: true}}} = socket)
       when not is_nil(id) do
-    players = Game.get_players()
+    players = GameServer.get_players()
     viewport = ViewPort.get_viewport(id)
-    bear = Game.get_bear(id)
+    bear = GameServer.get_bear(id)
 
     socket =
       socket
@@ -142,8 +142,8 @@ defmodule BearNecessitiesWeb.Game do
       )
       when dead < 50 do
     :timer.cancel(reference)
-    Game.remove_bear(id)
-    players = Game.get_players()
+    GameServer.remove_bear(id)
+    players = GameServer.get_players()
 
     socket =
       socket
@@ -159,7 +159,7 @@ defmodule BearNecessitiesWeb.Game do
   end
 
   def terminate(reason, %{id: id} = socket) do
-    Game.remove_bear(id)
+    GameServer.remove_bear(id)
 
     reason
   end

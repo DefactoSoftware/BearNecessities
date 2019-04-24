@@ -8,7 +8,7 @@ defmodule BearNecessities.Application do
   def start(_type, _args) do
     children = [
       BearNecessities.Repo,
-      Game
+      GameServer
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: BearNecessities.Supervisor)

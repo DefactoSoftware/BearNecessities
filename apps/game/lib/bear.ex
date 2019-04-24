@@ -31,22 +31,22 @@ defmodule Bear do
   """
   def move(id, action) do
     id
-    |> Game.get_bear()
+    |> GameServer.get_bear()
     |> _move(action)
   end
 
-  defp _move(bear, :down), do: Game.move(bear, :down, to: {bear.pos_x + 1, bear.pos_y})
-  defp _move(bear, :up), do: Game.move(bear, :up, to: {bear.pos_x - 1, bear.pos_y})
-  defp _move(bear, :left), do: Game.move(bear, :left, to: {bear.pos_x, bear.pos_y - 1})
-  defp _move(bear, :right), do: Game.move(bear, :right, to: {bear.pos_x, bear.pos_y + 1})
+  defp _move(bear, :down), do: GameServer.move(bear, :down, to: {bear.pos_x + 1, bear.pos_y})
+  defp _move(bear, :up), do: GameServer.move(bear, :up, to: {bear.pos_x - 1, bear.pos_y})
+  defp _move(bear, :left), do: GameServer.move(bear, :left, to: {bear.pos_x, bear.pos_y - 1})
+  defp _move(bear, :right), do: GameServer.move(bear, :right, to: {bear.pos_x, bear.pos_y + 1})
 
   def stop(id) do
-    GenServer.call(Game, {:stop, id})
+    GenServer.call(GameServer, {:stop, id})
   end
 
   def claw(id) do
     id
-    |> Game.get_bear()
-    |> Game.claw()
+    |> GameServer.get_bear()
+    |> GameServer.claw()
   end
 end
