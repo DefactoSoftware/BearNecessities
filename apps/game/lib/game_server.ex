@@ -9,7 +9,7 @@ defmodule GameServer do
   @field_width 40
   @miliseconds_dead_screen 2900
 
-  defstruct [:field, :bears, :bees, :trees, :honey_drops]
+  defstruct [:field, :bees, :trees, :honey_drops]
 
   def start_link(default) when is_list(default) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
@@ -20,9 +20,10 @@ defmodule GameServer do
     field = Field.create_field(@field_height, @field_width)
     :timer.send_interval(3000, self(), :spawn_honey)
 
+    :ets.new(:bears_table, [:set, :protected, :named_table])
+
     game = %GameServer{
       field: field,
-      bears: [],
       bees: [],
       honey_drops: [],
       trees: spawn_trees()
@@ -63,10 +64,12 @@ defmodule GameServer do
   def handle_call(
         {:get_viewport, id},
         _pid,
-        %{bears: bears} = state
+        state
       ) do
-    case get_bear_from_list(id, bears) do
-      %{pos_x: x, pos_y: y} ->
+    :ets.lookup(:bears_table, id)
+
+    case :ets.lookup(:bears_table, id) do
+      [{^id, %{pos_x: x, pos_y: y}}] ->
         position = {x, y}
         viewport = create_viewport(position, state)
         {:reply, viewport, state}
@@ -85,8 +88,9 @@ defmodule GameServer do
     field = Map.get(state, :field)
 
     bear = Bear.create_bear(field, id, display_name, started)
+    :ets.insert(:bears_table, {id, bear})
 
-    {:reply, bear, %{state | bears: [bear | Map.get(state, :bears)]}}
+    {:reply, bear, state}
   end
 
   @impl true
@@ -112,17 +116,18 @@ defmodule GameServer do
   end
 
   @impl true
-  def handle_call({:stop, id}, _pid, %{bears: bears} = state) do
-    bear = get_bear_from_list(id, bears)
+  def handle_call({:stop, id}, _pid, state) do
+    bear = :ets.lookup(:bears_table, id)
     bear = %{bear | moving: false, clawing: false}
-    state = update_state_with(state, bear)
+    :ets.insert(id, bear)
 
     {:reply, bear, state}
   end
 
   @impl true
   def handle_call(
-        {:claw, %Bear{honey: bear_honey, direction: direction, pos_x: x, pos_y: y} = bear},
+        {:claw,
+         %Bear{honey: bear_honey, direction: direction, pos_x: x, pos_y: y, id: id} = bear},
         _pid,
         state
       ) do
@@ -131,17 +136,14 @@ defmodule GameServer do
     {bear, state} =
       case target(direction, x, y, state) do
         %Tree{honey: tree_honey} = tree when tree_honey > 0 ->
-          new_bear = %{bear | honey: bear_honey + 1}
+          updated_bear = %{bear | honey: bear_honey + 1}
+          :ets.insert(id, updated_bear)
+          updated_state = update_state_with(state, %{tree | honey: tree_honey - 1})
 
-          new_state =
-            state
-            |> update_state_with(new_bear)
-            |> update_state_with(%{tree | honey: tree_honey - 1})
-
-          {new_bear, new_state}
+          {updated_bear, updated_state}
 
         %Bear{honey: other_bear_honey} = other_bear when other_bear_honey > 0 ->
-          new_bear = %{bear | honey: bear_honey + 1}
+          updated_bear = %{bear | honey: bear_honey + 1}
           other_bear = %{other_bear | honey: other_bear_honey - 1}
 
           other_bear =
@@ -149,29 +151,30 @@ defmodule GameServer do
               do: %{other_bear | dead: @miliseconds_dead_screen},
               else: other_bear
 
-          new_state =
-            state
-            |> update_state_with(new_bear)
-            |> update_state_with(other_bear)
+          :ets.insert(id, updated_bear)
+          updated_state = update_state_with(state, other_bear)
 
-          {new_bear, new_state}
+          {updated_bear, updated_state}
 
         %Tree{honey: 0} ->
-          {bear, update_state_with(state, bear)}
+          :ets.insert(id, bear)
+          {bear, state}
 
         %Bear{honey: 0} ->
-          {bear, update_state_with(state, bear)}
+          :ets.insert(id, bear)
+          {bear, state}
 
         _ ->
-          {bear, update_state_with(state, bear)}
+          :ets.insert(id, bear)
+          {bear, state}
       end
 
     {:reply, bear, state}
   end
 
   @impl true
-  def handle_call({:get_bear, id}, _pid, %{bears: bears} = state) do
-    bear = get_bear_from_list(id, bears)
+  def handle_call({:get_bear, id}, _pid, state) do
+    [{^id, bear}] = :ets.lookup(:bears_table, id)
     {:reply, bear, state}
   end
 
@@ -313,10 +316,11 @@ defmodule GameServer do
 
   def create_viewport({bear_x, bear_y} = position, %GameServer{
         field: field,
-        bears: bears,
         trees: trees,
         honey_drops: honey_drops
       }) do
+    [bears] = :ets.match(:bears_table, {:_, :"$1"})
+
     bears_task = get_from_list_task(position, bears)
     trees_task = get_from_list_task(position, trees)
     honey_drops_task = get_from_list_task(position, honey_drops)
