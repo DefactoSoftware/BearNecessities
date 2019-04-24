@@ -34,5 +34,9 @@ defmodule GameServerTest do
     test "move to a working place", %{player_pid: player_pid} do
       Player.move(player_pid, "phx-1", :up_arrow)
     end
+
+    test "create a viewport for the current position of the bear" do
+      GenServer.call(GameServer, {:get_viewport, "phx-1"})
+    end
   end
 end
