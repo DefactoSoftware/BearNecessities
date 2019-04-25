@@ -60,6 +60,12 @@ defmodule Game do
   end
 
   @impl true
+  def handle_call({:get_viewport, {_, _} = position}, _pid, %{bears: bears} = state) do
+    viewport = create_viewport(position, state)
+    {:reply, viewport, state}
+  end
+
+  @impl true
   def handle_call(
         {:get_viewport, id},
         _pid,
