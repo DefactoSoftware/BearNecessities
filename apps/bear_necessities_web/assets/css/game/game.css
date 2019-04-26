@@ -1,12 +1,67 @@
 .game {
+  display: flex;
+  overflow: hidden;
+
+  .main {
+    padding: 10px 30px;
+    flex: 1;
+    overflow: hidden;
+    min-width: calc(100vmin - 13em);
+  }
+
+  .sidebar {
+    padding: 10px 30px;
+    flex-basis: 30px;
+    flex: 0 0 25em;
+    overflow: hidden;
+  }
+
+  .gui {
+    height: 90px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .map {
+    border: 6px solid rgba(0, 0, 0, 0.5);
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vmin - 13em);
+    left: 0;
+    margin: auto;
+    right: 0;
+    text-align: center;
+    top: 0;
+    width: calc(100vmin - 13em);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: nowrap;
+    flex: 1;
+    justify-content: center;
+    justify-content: space-evenly;
+  }
+
+  h1 {
+    height: 1.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .load-bee {
     background-image: url("/images/bees/bees.gif");
   }
+
   .load-bee-1 {
     background-image: url("/images/bees/bees-1.gif");
   }
+
   .bee {
     background-image: url("/images/bees/bees.gif");
+
     &:before {
       content: "";
       display: block;
@@ -20,52 +75,33 @@
       transform: rotate(90deg);
     }
   }
-  .gui {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-
-  .map {
-    border: 6px solid rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    width: 800px;
-    height: 800px;
-    text-align: center;
-    margin: 0 auto;
-  }
-
-  .row {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    justify-content: space-evenly;
-    flex: 1;
-  }
 
   /*
   Tiles of map (terain, border)
   */
   .tile {
     background-size: cover;
-    image-rendering: pixelated;
-    height: 100%;
-    position: relative;
     flex: 1;
+    height: 100%;
+    image-rendering: pixelated;
+    position: relative;
 
     &.grass {
       &-1 {
         background-color: #44d873;
         background-image: url("/images/terain/grass-1.gif");
       }
+
       &-2 {
         background-color: #44d873;
         background-image: url("/images/terain/grass-2.gif");
       }
+
       &-3 {
         background-color: #44d873;
         background-image: url("/images/terain/grass-3.gif");
       }
+
       &-4 {
         background-color: #44d873;
         background-image: url("/images/terain/grass-4.gif");
@@ -82,11 +118,11 @@
   Items that are displayed inside tiles (bears, trees, honey, etc)
   */
   .item {
-    background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    image-rendering: pixelated;
+    background-size: cover;
     height: 100%;
+    image-rendering: pixelated;
     width: 100%;
 
     /*
@@ -108,8 +144,7 @@
     Bears
     */
     &.bear {
-      &.self {
-      }
+      &.self {}
 
       &.opponent {
         filter: grayscale(60%);

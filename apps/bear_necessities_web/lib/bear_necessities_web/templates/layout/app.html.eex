@@ -8,8 +8,12 @@
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>">
   </head>
   <body>
-    <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-    <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+    <%= if flash_info = get_flash(@conn, :info) do %>
+      <p class="alert alert-info" role="alert"><%= flash_info %></p>
+    <% end %>
+    <%= if flash_error = get_flash(@conn, :error) do %>
+      <p class="alert alert-danger" role="alert"><%= flash_error %></p>
+    <% end %>
 
     <%= render @view_module, @view_template, assigns %>
 

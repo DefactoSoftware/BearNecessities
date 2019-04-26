@@ -1,37 +1,43 @@
-<%= if @play_sounds do %>
-  <button phx-click="sounds_off" class="button small">Mute</button>
-  <audio src="<%= Routes.static_path(BearNecessitiesWeb.Endpoint, "/sound/game-sound.mp3") %>"  type="audio/mpeg" <%= if @autoplay do %> autoplay <% end %> loop> </audio>
-<% else %>
-  <button phx-click="sounds_on" class="button small">Sound</button>
-<% end %>
-
 <%= if @bear.started do %>
-
   <div class="game">
-    <div class="gui">
-      <h1>Hello, <%= @bear.display_name %></h1>
-      <span>X: <%= @pos_x %></span>
-      <span>Y: <%= @pos_y %></span>
-      <button phx-click="left" class="button small">left</button>
-      <button phx-click="down" class="button small">down</button>
-      <button phx-click="up" class="button small">up</button>
-      <button phx-click="right" class="button small">right</button>
-      <%= if is_nil(@bear.dead) do %>
-        <span phx-keydown="key_move" phx-target="window"></span>
-        <span phx-keyup="key_up" phx-target="window"></span>
-      <% end %>
-    </div>
+    <div class="main">
+      <div class="gui">
+        <h1>Hello, <%= @bear.display_name %></h1>
+        <span>X: <%= @pos_x %></span>
+        <span>Y: <%= @pos_y %></span>
+        <%= if @play_sounds do %>
+          <button phx-click="sounds_off" class="button small">Mute</button>
+          <audio src="<%= Routes.static_path(BearNecessitiesWeb.Endpoint, "/sound/game-sound.mp3") %>"  type="audio/mpeg" <%= if @autoplay do %> autoplay <% end %> loop> </audio>
+        <% else %>
+          <button phx-click="sounds_on" class="button small">Sound</button>
+        <% end %>
 
-    <div class="map">
-      <%= for row <- @viewport do %>
-        <div class="row">
-          <%= for {tile, item} <- row do %>
-            <div class="tile <%= tile_class(tile) %> ">
-              <div class="item <%= item_class(item, @id) %>"></div>
+        <button phx-click="left" class="button small">left</button>
+        <button phx-click="down" class="button small">down</button>
+        <button phx-click="up" class="button small">up</button>
+        <button phx-click="right" class="button small">right</button>
+        <%= if is_nil(@bear.dead) do %>
+          <span phx-keydown="key_move" phx-target="window"></span>
+          <span phx-keyup="key_up" phx-target="window"></span>
+        <% end %>
+      </div>
+
+      <div class="map">
+          <%= for row <- @viewport do %>
+            <div class="row">
+              <%= for {tile, item} <- row do %>
+                <div class="tile <%= tile_class(tile) %> ">
+                  <div class="item <%= item_class(item, @id) %>"></div>
+                </div>
+              <% end %>
             </div>
           <% end %>
-        </div>
-      <% end %>
+      </div>
+
+    </div>
+
+    <div class="sidebar">
+      <%= BearNecessitiesWeb.Playfield.render("scoreboard.html", assigns) %>
     </div>
   </div>
 
@@ -50,12 +56,8 @@
       <%= submit("Start", phx_disable_with: "Starting...", class: "button red") %>
     <% end %>
     <br>
-    <p>
-    Use the Spacebar to claw.
-    </p>
-    <p>
-    Arrow keys to move.
-    </p>
+    <p>Use the Spacebar to claw.</p>
+    <p>Arrow keys to move.</p>
   </div>
 
   <div class="preload-images">
@@ -86,5 +88,3 @@
     </div>
   </div>
 <% end %>
-
-<%= BearNecessitiesWeb.Playfield.render("scoreboard.html", assigns) %>
