@@ -224,6 +224,13 @@ defmodule Game do
   def position_for_direction(nil, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x, pos_y}
 
   @impl true
+  def handle_cast({:remove_bee, id}, %{bees: bees} = state) do
+    bees = Enum.reject(bees, &(&1.id == id))
+
+    {:noreply, %{state | bees: bees}}
+  end
+
+  @impl true
   def handle_cast({:remove_bear, id}, %{bears: bears} = state) do
     bears = Enum.reject(bears, &(&1.id == id))
 

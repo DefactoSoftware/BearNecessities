@@ -1,6 +1,7 @@
 defmodule Bee do
   use GenServer
 
+  @duration_ms 10000
   @directions [:up, :left, :right, :down]
   @enforce_keys [:pos_x, :pos_y]
   defstruct [:id, :catching, :pos_x, :pos_y]
@@ -12,11 +13,17 @@ defmodule Bee do
   def init(position) do
     :timer.send_interval(100, self(), :update)
     GenServer.cast(Game, {:create_bee, self})
-    {:ok, []}
+    {:ok, @duration_ms}
   end
 
   @impl true
-  def handle_info(:update, []) do
+  def handle_info(:update, duration) when duration < 0 do
+    GenServer.cast(Game, {:remove_bee, self()})
+    {:stop, :shutdown, -1}
+  end
+
+  @impl true
+  def handle_info(:update, duration) do
     bee = GenServer.call(Game, {:get_bee, self})
     bear = GenServer.call(Game, {:get_bear, bee.catching})
 
