@@ -1,4 +1,10 @@
 .game {
+  .load-bee {
+    background-image: url("/images/bees/bees.gif");
+  }
+  .load-bee-1 {
+    background-image: url("/images/bees/bees-1.gif");
+  }
   .bee {
     background-image: url("/images/bees/bees.gif");
     &:before {
