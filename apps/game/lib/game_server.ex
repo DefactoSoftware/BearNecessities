@@ -186,6 +186,43 @@ defmodule Game do
   end
 
   @impl true
+  def handle_call({:try_to_sting, bee}, _, %{bears: bears} = state) do
+    stung = false
+
+    bears =
+      Enum.map(bears, fn bear ->
+        if next_to_bee?(bee, bear) do
+          stung = true
+          bear = %{bear | honey: bear.honey - 1}
+        else
+          bear
+        end
+      end)
+
+    {:reply, stung, %{state | bears: bears}}
+  end
+
+  @impl true
+  def handle_cast({:move_bee, bee, directions}, state) do
+    {x, y} =
+      Enum.find(directions, fn direction ->
+        direction
+        |> position_for_direction(bee)
+        |> move_to?(id, state)
+      end)
+      |> position_for_direction(bee)
+
+    state = update_state_with(state, %{bee | pos_x: x, pos_y: y})
+
+    {:noreply, state}
+  end
+
+  def position_for_direction(:up, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x - 1, pos_y}
+  def position_for_direction(:down, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x + 1, pos_y}
+  def position_for_direction(:right, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x, pos_y + 1}
+  def position_for_direction(:left, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x, pos_y - 1}
+
+  @impl true
   def handle_cast({:remove_bear, id}, %{bears: bears} = state) do
     bears = Enum.reject(bears, &(&1.id == id))
 
@@ -203,6 +240,17 @@ defmodule Game do
 
     Enum.find(bears, &(&1.pos_x == target_x and &1.pos_y == target_y)) ||
       Enum.find(trees, &(&1.pos_x == target_x and &1.pos_y == target_y))
+  end
+
+  def update_state_with(%{bees: bees} = state, bee = %Bee{}) do
+    bees =
+      Enum.map(bees, fn list_bee ->
+        if list_bear.id == bee.id,
+          do: bee,
+          else: list_bear
+      end)
+
+    %{state | bees: bees}
   end
 
   def update_state_with(%{bears: bears} = state, bear = %Bear{}) do
@@ -255,7 +303,12 @@ defmodule Game do
     Enum.filter(bears, &(&1.pos_x < x + @horizontal_field_of_view))
   end
 
-  defp move_to?(position, id, %{trees: trees, bears: bears, field: field}) do
+  defp move_to?(position, id, %{trees: trees, bears: bears, bees: bees, field: field}) do
+    id_bees =
+      Task.async(fn ->
+        not Enum.any?(bees, fn bee -> {bee.pos_x, bee.pos_y} == position and bee.id != id end)
+      end)
+
     id_trees =
       Task.async(fn ->
         not Enum.any?(trees, fn tree -> {tree.pos_x, tree.pos_y} == position end)
@@ -268,7 +321,8 @@ defmodule Game do
         end)
       end)
 
-    Task.await(id_bears) and Task.await(id_trees) and pos_within_field?(position, field)
+    Task.await(id_bees) and Task.await(id_bears) and Task.await(id_trees) and
+      pos_within_field?(position, field)
   end
 
   defp fetch_honey_drop(%{honey: honey} = bear, position, honey_drops) do
@@ -362,6 +416,15 @@ defmodule Game do
   def get_players() do
     GenServer.call(Game, :get_players)
   end
+
+  defp nest_to_bee?(%Bee{pos_x: pox_x, pos_y: pos_y}, bear)
+       when (pox_x == bear.pos_x - 1 and pos_x == bear.pos_y) or
+              (pox_x == bear.pos_x + 1 and pos_x == bear.pos_y) or
+              (pox_x == bear.pos_x and pos_x == bear.pos_y - 1) or
+              (pox_x == bear.pos_x and pos_x == bear.pos_y + 1),
+       do: true
+
+  defp next_to_bee(_, bear), do: false
 
   @doc """
   This will remove the bear from the game, only use this when player is disconnected. It is a cast and will not return return anything.

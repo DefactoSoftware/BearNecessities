@@ -20,7 +20,7 @@ defmodule Bee do
     bee = GenServer.call(Game, {:get_bee, pid})
     bear = GenServer.call(Game, {:get_bear, bee.catching})
 
-    unless try_to_sting(bee, bear) do
+    unless GenServer.call(Game, {:try_to_sting, bee}) do
       bee
       |> direction_lengths(bear)
       |> move_to(bee)
@@ -30,13 +30,16 @@ defmodule Bee do
   end
 
   def move_to(directions, bee) do
-    updated_bee = GenServer.call(Game, {:move_bee, bee, directions})
+    GenServer.cast(Game, {:move_bee, bee, directions})
   end
 
   def direction_lengths(bee, bear) do
-    Enum.reduce(@directions, %{}, fn direction, acc ->
-      %{direction => distance(direction, bee, bee) + distance(direction, bear, bee)}
+    @directions
+    |> Enum.reduce([], fn direction, acc ->
+      [{direction, distance(direction, bee, bee) + distance(direction, bear, bee)} | acc]
     end)
+    |> Enum.sort(fn {_, f}, {_, s} -> f <= s end)
+    |> Keyword.keys()
   end
 
   def distance(:up, obj, new_pos),
