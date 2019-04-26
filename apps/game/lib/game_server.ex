@@ -221,6 +221,7 @@ defmodule Game do
   def position_for_direction(:down, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x + 1, pos_y}
   def position_for_direction(:right, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x, pos_y + 1}
   def position_for_direction(:left, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x, pos_y - 1}
+  def position_for_direction(nil, %{pos_x: pos_x, pos_y: pos_y}), do: {pos_x, pos_y}
 
   @impl true
   def handle_cast({:remove_bear, id}, %{bears: bears} = state) do
