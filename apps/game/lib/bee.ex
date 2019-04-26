@@ -6,10 +6,12 @@ defmodule Bee do
   @enforce_keys [:pos_x, :pos_y]
   defstruct [:id, :catching, :pos_x, :pos_y]
 
+  @impl true
   def start_link(defaults) do
     GenServer.start_link(__MODULE__, defaults)
   end
 
+  @impl true
   def init(_) do
     :timer.send_interval(150, self(), :update)
     {:ok, @duration_ms}
@@ -20,16 +22,10 @@ defmodule Bee do
     {:stop, :shutdown, -1}
   end
 
-  def terminate(reason, state) do
-    GenServer.cast(Game, {:remove_bee, self()})
-    reason
-  end
-
-  @impl true
   def handle_info(:update, duration) when duration > 0 do
-    with %Bear{} = bee = GenServer.call(Game, {:get_bee, self}),
+    with %Bee{} = bee = GenServer.call(Game, {:get_bee, self}),
          %Bear{} <- bear < GenServer.call(Game, {:get_bear, bee.catching}),
-         true <- GenServer.call(Game, {:try_to_sting, bee}) do
+         false <- GenServer.call(Game, {:try_to_sting, bee}) do
       bee
       |> direction_lengths(bear)
       |> move_to(bee)
@@ -40,6 +36,12 @@ defmodule Bee do
 
   def handle_info(:update, _) do
     {:stop, :normal, -1}
+  end
+
+  @impl true
+  def terminate(reason, state) do
+    GenServer.cast(Game, {:remove_bee, self()})
+    reason
   end
 
   def move_to(directions, bee) do
