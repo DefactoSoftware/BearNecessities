@@ -138,6 +138,10 @@
     */
     &.tree {
       background-image: url("/images/trees/tree-1.gif");
+
+      &.hive {
+        background-image: url("/images/trees/treehive.gif");
+      }
     }
 
     /*

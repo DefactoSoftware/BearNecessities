@@ -30,6 +30,9 @@ defmodule BearNecessitiesWeb.Playfield do
       %Bee{} ->
         "bee"
 
+      %Tree{hive: %Hive{}} ->
+        "tree hive"
+
       %Tree{} ->
         "tree"
 

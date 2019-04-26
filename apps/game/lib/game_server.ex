@@ -4,10 +4,20 @@ defmodule Game do
   @vertical_view_distance 5
   @horizontal_view_distance 5
   @number_of_trees 20
-  @max_honey_drops 8
+  @hive_spawn_time 3000
   @field_height 40
   @field_width 40
   @miliseconds_dead_screen 2900
+  @circular_trajectory %{
+    left: :left_up,
+    left_up: :up,
+    up: :right_up,
+    right_up: :right,
+    right: :right_down,
+    right_down: :down,
+    down: :left_down,
+    left_down: :left
+  }
 
   defstruct [:field, :bears, :bees, :trees, :honey_drops]
 
@@ -18,7 +28,7 @@ defmodule Game do
   @impl true
   def init([]) do
     field = Field.create_field(@field_height, @field_width)
-    :timer.send_interval(3000, self(), :spawn_honey)
+    :timer.send_interval(@hive_spawn_time, self(), :spawn_hive) |> IO.inspect()
 
     game = %Game{
       field: field,
@@ -32,31 +42,21 @@ defmodule Game do
   end
 
   @impl true
-  def handle_info(:spawn_honey, %{honey_drops: honey_drops} = state) do
-    new_honey_drops =
-      if Enum.count(honey_drops) < @max_honey_drops do
-        spawn_honey_drop(state)
-      else
-        honey_drops
+  def handle_info(:spawn_hive, %{trees: trees} = state) do
+    new_state =
+      case Enum.filter(trees, &(&1.hive == nil)) do
+        [] -> state
+        trees -> add_hive_to_tree(state)
       end
 
-    {:noreply, %{state | honey_drops: new_honey_drops}}
+    {:noreply, new_state}
   end
 
-  defp spawn_honey_drop(%{honey_drops: honey_drops, trees: trees}) do
-    all_x = Enum.map(honey_drops ++ trees, & &1.pos_x)
-    all_y = Enum.map(honey_drops ++ trees, & &1.pos_y)
-    potential_x = Enum.to_list(0..@field_height) -- all_x
-    potential_y = Enum.to_list(0..@field_width) -- all_y
+  defp add_hive_to_tree(%{trees: trees} = state) do
+    target_tree = Enum.random(trees)
+    new_tree = %{target_tree | hive: %Hive{hp: 5, honey: 5}}
 
-    [
-      %HoneyDrop{
-        honey: Enum.random([1, 3, 5, 7]),
-        pos_x: Enum.random(potential_x),
-        pos_y: Enum.random(potential_y)
-      }
-      | honey_drops
-    ]
+    update_state_with(state, new_tree)
   end
 
   @impl true
@@ -120,24 +120,36 @@ defmodule Game do
 
   @impl true
   def handle_call(
-        {:claw, %Bear{honey: bear_honey, direction: direction, pos_x: x, pos_y: y} = bear},
+        {:claw,
+         %Bear{honey: bear_honey, direction: direction, pos_x: bear_x, pos_y: bear_y} = bear},
         _pid,
         state
       ) do
     bear = %{bear | clawing: true}
 
     {bear, state} =
-      case target(direction, x, y, state) do
-        %Tree{honey: tree_honey} = tree when tree_honey > 0 ->
-          new_bear = %{bear | honey: bear_honey + 1}
+      case target(direction, bear_x, bear_y, state) do
+        %Tree{pos_x: x, pos_y: y, hive: %Hive{hp: hp}} = tree when hp == 1 ->
+          dropped_honey = honey_drop(bear, tree)
 
           new_state =
             state
             |> start_new_bee(bear)
-            |> update_state_with(new_bear)
-            |> update_state_with(%{tree | honey: tree_honey - 1})
+            |> update_state_with(%{tree | hive: nil})
+            |> update_state_with(dropped_honey)
 
-          {new_bear, new_state}
+          {bear, new_state}
+
+        %Tree{hive: nil} ->
+          {bear, update_state_with(state, bear)}
+
+        %Tree{hive: %Hive{hp: hp} = hive} = tree when hp > 0 ->
+          new_state =
+            state
+            |> update_state_with(%{tree | hive: %{hive | hp: hp - 1}})
+            |> start_new_bee(bear)
+
+          {bear, new_state}
 
         %Bear{honey: other_bear_honey} = other_bear when other_bear_honey > 0 ->
           new_bear = %{bear | honey: bear_honey + 1}
@@ -150,9 +162,6 @@ defmodule Game do
 
           {new_bear, new_state}
 
-        %Tree{honey: 0} ->
-          {bear, update_state_with(state, bear)}
-
         %Bear{honey: 0} ->
           {bear, update_state_with(state, bear)}
 
@@ -162,6 +171,34 @@ defmodule Game do
 
     {:reply, bear, state}
   end
+
+  defp honey_drop(%Bear{pos_x: bear_x, pos_y: bear_y}, %Tree{pos_x: tree_x, pos_y: tree_y}) do
+    relative_bear_location = relative_location({bear_x - tree_x, bear_y - tree_y})
+
+    {_, honey_drops} =
+      Enum.reduce(1..5, {relative_bear_location, []}, fn _, {direction, honey_drops} ->
+        new_direction = Map.get(@circular_trajectory, direction)
+        honey_drop = honey_drop_location(new_direction, tree_x, tree_y)
+
+        {new_direction, [honey_drop | honey_drops]}
+      end)
+
+    honey_drops
+  end
+
+  def honey_drop_location(:left_up, x, y), do: %HoneyDrop{pos_x: x - 1, pos_y: y - 1}
+  def honey_drop_location(:up, x, y), do: %HoneyDrop{pos_x: x - 1, pos_y: y}
+  def honey_drop_location(:right_up, x, y), do: %HoneyDrop{pos_x: x - 1, pos_y: y + 1}
+  def honey_drop_location(:right, x, y), do: %HoneyDrop{pos_x: x, pos_y: y + 1}
+  def honey_drop_location(:right_down, x, y), do: %HoneyDrop{pos_x: x + 1, pos_y: y + 1}
+  def honey_drop_location(:down, x, y), do: %HoneyDrop{pos_x: x + 1, pos_y: y}
+  def honey_drop_location(:left_down, x, y), do: %HoneyDrop{pos_x: x + 1, pos_y: y - 1}
+  def honey_drop_location(:left, x, y), do: %HoneyDrop{pos_x: x, pos_y: y - 1}
+
+  defp relative_location({-1, 0}), do: :up
+  defp relative_location({0, -1}), do: :left
+  defp relative_location({0, 1}), do: :right
+  defp relative_location({1, 0}), do: :down
 
   def remove_honey_from_bear(%{honey: honey} = bear) do
     bear = %{bear | honey: honey - 1}
@@ -260,6 +297,10 @@ defmodule Game do
 
     Enum.find(bears, &(&1.pos_x == target_x and &1.pos_y == target_y)) ||
       Enum.find(trees, &(&1.pos_x == target_x and &1.pos_y == target_y))
+  end
+
+  def update_state_with(%{honey_drops: honey_drops} = state, [%HoneyDrop{} | _] = new_honey_drops) do
+    %{state | honey_drops: honey_drops ++ new_honey_drops}
   end
 
   def update_state_with(%{bees: bees} = state, bee = %Bee{}) do
@@ -421,6 +462,9 @@ defmodule Game do
               inner ++
                 [
                   cond do
+                    not pos_within_field?({row, column}, field) ->
+                      {%Tile{type: :nothing}, nil}
+
                     not is_nil(item = item_from_list({row, column}, list)) ->
                       {get_tile(field, row, column), item}
 
@@ -493,7 +537,7 @@ defmodule Game do
     if Enum.count(trees) < @number_of_trees do
       x = Enum.random(possible_x)
       y = Enum.random(possible_y)
-      tree = %Tree{pos_x: x, pos_y: y, honey: 1..15 |> Enum.to_list() |> Enum.random()}
+      tree = %Tree{pos_x: x, pos_y: y}
 
       create_tree(possible_x -- [x], possible_y -- [y], [tree | trees])
     else
