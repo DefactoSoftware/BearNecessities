@@ -368,14 +368,18 @@ defmodule Game do
   def create_viewport({bear_x, bear_y} = position, %Game{
         field: field,
         bears: bears,
+        bees: bees,
         trees: trees,
         honey_drops: honey_drops
       }) do
     bears_task = get_from_list_task(position, bears)
     trees_task = get_from_list_task(position, trees)
     honey_drops_task = get_from_list_task(position, honey_drops)
+    bees_task = get_from_list_task(position, bees)
 
-    list = Task.await(bears_task) ++ Task.await(trees_task) ++ Task.await(honey_drops_task)
+    list =
+      Task.await(bears_task) ++
+        Task.await(trees_task) ++ Task.await(honey_drops_task) ++ Task.await(bees_task)
 
     Enum.reduce(
       (bear_x - @horizontal_view_distance)..(bear_x + @horizontal_view_distance),
