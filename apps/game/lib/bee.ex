@@ -1,5 +1,5 @@
 defmodule Bee do
-  use Genserver
+  use GenServer
 
   @directions [:up, :left, :right, :down]
   @enforce_keys [:pos_x, :pos_y]
@@ -12,12 +12,12 @@ defmodule Bee do
   def init(position) do
     :timer.send_interval(100, self(), :update)
     GenServer.cast(Game, {:create_bee, self})
-    {:ok, pid}
+    {:ok, []}
   end
 
   @impl true
-  def handle_info(:update, pid) do
-    bee = GenServer.call(Game, {:get_bee, pid})
+  def handle_info(:update, []) do
+    bee = GenServer.call(Game, {:get_bee, self})
     bear = GenServer.call(Game, {:get_bear, bee.catching})
 
     unless GenServer.call(Game, {:try_to_sting, bee}) do
@@ -26,7 +26,7 @@ defmodule Bee do
       |> move_to(bee)
     end
 
-    {:noreply, pid}
+    {:noreply, []}
   end
 
   def move_to(directions, bee) do

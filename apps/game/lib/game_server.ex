@@ -208,7 +208,7 @@ defmodule Game do
       Enum.find(directions, fn direction ->
         direction
         |> position_for_direction(bee)
-        |> move_to?(id, state)
+        |> move_to?(bee.id, state)
       end)
       |> position_for_direction(bee)
 
@@ -246,9 +246,9 @@ defmodule Game do
   def update_state_with(%{bees: bees} = state, bee = %Bee{}) do
     bees =
       Enum.map(bees, fn list_bee ->
-        if list_bear.id == bee.id,
+        if list_bee.id == bee.id,
           do: bee,
-          else: list_bear
+          else: list_bee
       end)
 
     %{state | bees: bees}
@@ -418,14 +418,14 @@ defmodule Game do
     GenServer.call(Game, :get_players)
   end
 
-  defp nest_to_bee?(%Bee{pos_x: pox_x, pos_y: pos_y}, bear)
-       when (pox_x == bear.pos_x - 1 and pos_x == bear.pos_y) or
-              (pox_x == bear.pos_x + 1 and pos_x == bear.pos_y) or
-              (pox_x == bear.pos_x and pos_x == bear.pos_y - 1) or
-              (pox_x == bear.pos_x and pos_x == bear.pos_y + 1),
+  defp nest_to_bee?(%Bee{pos_x: pos_x, pos_y: pos_y}, %{pos_x: bx, pos_y: by})
+       when (pos_x == bx - 1 and pos_y == by) or
+              (pos_x == bx + 1 and pos_y == by) or
+              (pos_x == bx and pos_y == by - 1) or
+              (pos_x == bx and pos_y == by + 1),
        do: true
 
-  defp next_to_bee(_, bear), do: false
+  defp next_to_bee?(_, bear), do: false
 
   @doc """
   This will remove the bear from the game, only use this when player is disconnected. It is a cast and will not return return anything.
