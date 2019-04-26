@@ -1,4 +1,25 @@
 .game {
+  .load-bee {
+    background-image: url("/images/bees/bees.gif");
+  }
+  .load-bee-1 {
+    background-image: url("/images/bees/bees-1.gif");
+  }
+  .bee {
+    background-image: url("/images/bees/bees.gif");
+    &:before {
+      content: "";
+      display: block;
+      height: 100%;
+      flex: 1;
+      position: absolute;
+      width: 100%;
+      background-image: url("/images/bees/bees-1.gif");
+      background-size: cover;
+      background-repeat: no-repeat;
+      transform: rotate(90deg);
+    }
+  }
   .gui {
     text-align: center;
     margin-bottom: 30px;
@@ -29,6 +50,7 @@
     background-size: cover;
     image-rendering: pixelated;
     height: 100%;
+    position: relative;
     flex: 1;
 
     &.grass {

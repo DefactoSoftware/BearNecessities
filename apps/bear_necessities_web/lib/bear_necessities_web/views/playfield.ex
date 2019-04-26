@@ -27,6 +27,9 @@ defmodule BearNecessitiesWeb.Playfield do
       %Bear{direction: direction, dead: _dead} ->
         "bear opponent dead"
 
+      %Bee{} ->
+        "bee"
+
       %Tree{} ->
         "tree"
 
