@@ -24,7 +24,7 @@ defmodule Bee do
 
   def handle_info(:update, duration) when duration > 0 do
     with %Bee{} = bee = GenServer.call(Game, {:get_bee, self}),
-         %Bear{} <- bear < GenServer.call(Game, {:get_bear, bee.catching}),
+         %Bear{} = bear <- GenServer.call(Game, {:get_bear, bee.catching}),
          false <- GenServer.call(Game, {:try_to_sting, bee}) do
       bee
       |> direction_lengths(bear)
