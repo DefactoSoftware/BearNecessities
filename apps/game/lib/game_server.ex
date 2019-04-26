@@ -118,17 +118,6 @@ defmodule Game do
     {:reply, bear, state}
   end
 
-  def start_new_bee(%{bees: bees} = state, bear) do
-    {:ok, pid} = Bee.start_link([])
-
-    %{
-      state
-      | bees: [
-          %Bee{id: pid, pos_x: bear.pos_x - 1, pos_y: bear.pos_y - 1, catching: bear.id} | bees
-        ]
-    }
-  end
-
   @impl true
   def handle_call(
         {:claw, %Bear{honey: bear_honey, direction: direction, pos_x: x, pos_y: y} = bear},
@@ -447,6 +436,21 @@ defmodule Game do
         )
       end
     )
+  end
+
+  def start_new_bee(%{bees: bees} = state, bear) do
+    if Enum.random([true, false, false, false, false, false]) do
+      {:ok, pid} = Bee.start_link([])
+
+      %{
+        state
+        | bees: [
+            %Bee{id: pid, pos_x: bear.pos_x - 1, pos_y: bear.pos_y - 1, catching: bear.id} | bees
+          ]
+      }
+    else
+      state
+    end
   end
 
   def get_tile(field, row, column) do
