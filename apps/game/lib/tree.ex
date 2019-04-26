@@ -1,3 +1,3 @@
 defmodule Tree do
-  defstruct pos_x: nil, pos_y: nil, honey: 10
+  defstruct pos_x: nil, pos_y: nil, hive: nil
 end
