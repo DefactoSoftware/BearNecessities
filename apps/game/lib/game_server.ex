@@ -118,6 +118,17 @@ defmodule Game do
     {:reply, bear, state}
   end
 
+  def start_new_bee(%{bees: bees} = state, bear) do
+    {:ok, pid} = Bee.start_link([])
+
+    %{
+      state
+      | bees: [
+          %Bee{id: pid, pos_x: bear.pos_x - 1, pos_y: bear.pos_y - 1, catching: bear.id} | bees
+        ]
+    }
+  end
+
   @impl true
   def handle_call(
         {:claw, %Bear{honey: bear_honey, direction: direction, pos_x: x, pos_y: y} = bear},
@@ -133,6 +144,7 @@ defmodule Game do
 
           new_state =
             state
+            |> start_new_bee(bear)
             |> update_state_with(new_bear)
             |> update_state_with(%{tree | honey: tree_honey - 1})
 
@@ -140,12 +152,7 @@ defmodule Game do
 
         %Bear{honey: other_bear_honey} = other_bear when other_bear_honey > 0 ->
           new_bear = %{bear | honey: bear_honey + 1}
-          other_bear = %{other_bear | honey: other_bear_honey - 1}
-
-          other_bear =
-            if other_bear.honey < 1,
-              do: %{other_bear | dead: @miliseconds_dead_screen},
-              else: other_bear
+          other_bear = remove_honey_from_bear(other_bear)
 
           new_state =
             state
@@ -167,10 +174,25 @@ defmodule Game do
     {:reply, bear, state}
   end
 
+  def remove_honey_from_bear(%{honey: honey} = bear) do
+    bear = %{bear | honey: honey - 1}
+
+    bear =
+      if bear.honey < 1,
+        do: %{bear | dead: @miliseconds_dead_screen},
+        else: bear
+  end
+
   @impl true
   def handle_call({:get_bear, id}, _pid, %{bears: bears} = state) do
     bear = get_bear_from_list(id, bears)
     {:reply, bear, state}
+  end
+
+  @impl true
+  def handle_call({:get_bee, id}, _pid, %{bees: bees} = state) do
+    bee = get_bee_from_list(id, bees)
+    {:reply, bee, state}
   end
 
   @impl true
@@ -193,7 +215,8 @@ defmodule Game do
       Enum.map(bears, fn bear ->
         if next_to_bee?(bee, bear) do
           stung = true
-          bear = %{bear | honey: bear.honey - 1}
+
+          bear = remove_honey_from_bear(bear)
         else
           bear
         end
@@ -293,6 +316,13 @@ defmodule Game do
 
   def get_bear(id) do
     GenServer.call(Game, {:get_bear, id})
+  end
+
+  defp get_bee_from_list(id, bees) do
+    bees
+    |> Enum.find(fn bee ->
+      bee.id == id
+    end)
   end
 
   defp get_bear_from_list(id, bears) do
@@ -429,7 +459,7 @@ defmodule Game do
     GenServer.call(Game, :get_players)
   end
 
-  defp nest_to_bee?(%Bee{pos_x: pos_x, pos_y: pos_y}, %{pos_x: bx, pos_y: by})
+  defp next_to_bee?(%Bee{pos_x: pos_x, pos_y: pos_y}, %{pos_x: bx, pos_y: by})
        when (pos_x == bx - 1 and pos_y == by) or
               (pos_x == bx + 1 and pos_y == by) or
               (pos_x == bx and pos_y == by - 1) or

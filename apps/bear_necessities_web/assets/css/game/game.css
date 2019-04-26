@@ -1,4 +1,7 @@
 .game {
+  .bee {
+        background-image: url("/images/bees/bees.gif");
+  }
   .gui {
     text-align: center;
     margin-bottom: 30px;

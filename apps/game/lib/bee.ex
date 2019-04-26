@@ -10,20 +10,23 @@ defmodule Bee do
     GenServer.start_link(__MODULE__, defaults)
   end
 
-  def init(position) do
-    :timer.send_interval(100, self(), :update)
-    GenServer.cast(Game, {:create_bee, self})
+  def init(_) do
+    :timer.send_interval(150, self(), :update)
     {:ok, @duration_ms}
   end
 
   @impl true
   def handle_info(:update, duration) when duration < 0 do
-    GenServer.cast(Game, {:remove_bee, self()})
     {:stop, :shutdown, -1}
   end
 
+  def terminate(reason, state) do
+    GenServer.cast(Game, {:remove_bee, self()})
+    reason
+  end
+
   @impl true
-  def handle_info(:update, duration) do
+  def handle_info(:update, duration) when duration > 0 do
     bee = GenServer.call(Game, {:get_bee, self})
     bear = GenServer.call(Game, {:get_bear, bee.catching})
 
@@ -33,7 +36,11 @@ defmodule Bee do
       |> move_to(bee)
     end
 
-    {:noreply, []}
+    {:noreply, duration - 100}
+  end
+
+  def handle_info(:update, _) do
+    {:stop, :normal, -1}
   end
 
   def move_to(directions, bee) do
@@ -50,14 +57,14 @@ defmodule Bee do
   end
 
   def distance(:up, obj, new_pos),
-    do: abs(obj.pos_x - new_pos.pos_x - 1) + abs(obj.pos_y - new_pos.pos_y)
-
-  def distance(:down, obj, new_pos),
     do: abs(obj.pos_x - new_pos.pos_x + 1) + abs(obj.pos_y - new_pos.pos_y)
 
+  def distance(:down, obj, new_pos),
+    do: abs(obj.pos_x - new_pos.pos_x - 1) + abs(obj.pos_y - new_pos.pos_y)
+
   def distance(:left, obj, new_pos),
-    do: abs(obj.pos_x - new_pos.pos_x) + abs(obj.pos_y - new_pos.pos_y - 1)
+    do: abs(obj.pos_x - new_pos.pos_x) + abs(obj.pos_y - new_pos.pos_y + 1)
 
   def distance(:right, obj, new_pos),
-    do: abs(obj.pos_x - new_pos.pos_x) + abs(obj.pos_y - new_pos.pos_y + 1)
+    do: abs(obj.pos_x - new_pos.pos_x) + abs(obj.pos_y - new_pos.pos_y - 1)
 end
