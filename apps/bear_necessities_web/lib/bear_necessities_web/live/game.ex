@@ -2,7 +2,6 @@ defmodule BearNecessitiesWeb.Game do
   use Phoenix.LiveView
   require Logger
 
-  @arrow_keys ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"]
   @action_map %{
     "right" => "ArrowRight",
     "left" => "ArrowLeft",
@@ -10,6 +9,7 @@ defmodule BearNecessitiesWeb.Game do
     "down" => "ArrowDown"
   }
   @action_keys Map.keys(@action_map)
+  @arrow_keys Map.values(@action_map)
 
   alias BearNecessitiesWeb.Playfield
 
@@ -77,23 +77,27 @@ defmodule BearNecessitiesWeb.Game do
     {:noreply, socket}
   end
 
-  def handle_event("key_move", key, %{id: id} = socket)
+  def handle_event("key_move", %{"key" => key}, %{id: id} = socket)
       when key in @arrow_keys do
     socket = move_player(id, key, socket)
     {:noreply, socket}
   end
 
-  def handle_event("key_move", _, %{id: id} = socket) do
-    {:noreply, socket}
-  end
-
-  def handle_event("key_up", key, %{id: id} = socket)
+  def handle_event("key_up", %{"key" => key}, %{id: id} = socket)
       when key in @arrow_keys do
     Bear.stop(id)
     {:noreply, socket}
   end
 
-  def handle_event("key_up", " ", %{id: id, assigns: %{player_pid: player_pid}} = socket) do
+  def handle_event("key_move", %{"key" => key}, %{id: id} = socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "key_up",
+        %{"key" => " "},
+        %{id: id, assigns: %{player_pid: player_pid}} = socket
+      ) do
     socket =
       socket
       |> assign(:bear, Player.claw(player_pid, id))
