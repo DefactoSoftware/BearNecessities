@@ -6,7 +6,6 @@ defmodule Bee do
   @enforce_keys [:pos_x, :pos_y]
   defstruct [:id, :catching, :pos_x, :pos_y]
 
-  @impl true
   def start_link(defaults) do
     GenServer.start_link(__MODULE__, defaults)
   end
@@ -23,9 +22,9 @@ defmodule Bee do
   end
 
   def handle_info(:update, duration) when duration > 0 do
-    with %Bee{} = bee = GenServer.call(Game, {:get_bee, self}),
+    with %Bee{} = bee = GenServer.call(Game, {:get_bee, self()}),
          %Bear{} = bear <- GenServer.call(Game, {:get_bear, bee.catching}),
-         false <- GenServer.call(Game, {:try_to_sting, bee}) do
+         true <- GenServer.call(Game, {:try_to_sting, bee}) do
       bee
       |> direction_lengths(bear)
       |> move_to(bee)
@@ -39,7 +38,7 @@ defmodule Bee do
   end
 
   @impl true
-  def terminate(reason, state) do
+  def terminate(reason, _) do
     GenServer.cast(Game, {:remove_bee, self()})
     reason
   end
@@ -68,4 +67,21 @@ defmodule Bee do
 
   def distance(:right, obj, new_pos),
     do: abs(obj.pos_x - new_pos.pos_x) + abs(obj.pos_y - new_pos.pos_y - 1)
+
+  def try_to_sting(bee, bears) do
+    Enum.map(bears, fn bear ->
+      if next_to_bee?(bee, bear),
+        do: Game.remove_honey_from_bear(bear),
+        else: bear
+    end)
+  end
+
+  defp next_to_bee?(%Bee{pos_x: pos_x, pos_y: pos_y}, %{pos_x: bx, pos_y: by})
+       when (pos_x == bx - 1 and pos_y == by) or
+              (pos_x == bx + 1 and pos_y == by) or
+              (pos_x == bx and pos_y == by - 1) or
+              (pos_x == bx and pos_y == by + 1),
+       do: true
+
+  defp next_to_bee?(_, _), do: false
 end
