@@ -14,6 +14,7 @@ config :bear_necessities_web, BearNecessitiesWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "XGyIQiCWhwimCTtX1G470XJdDMgNqYBgjETuYNYeqbYLHj1ATH2IaTtM2Z5iF8JN",
   render_errors: [view: BearNecessitiesWeb.ErrorView, accepts: ~w(html json)],
+  live_view: [signing_salt: "0nq3UJ4Q"],
   pubsub: [name: BearNecessitiesWeb.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Import environment specific config. This must remain at the bottom
