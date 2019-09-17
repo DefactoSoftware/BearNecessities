@@ -1,0 +1,73 @@
+version: 2
+jobs:
+  build:
+    parallelism: 1
+    docker:
+      - image: circleci/elixir:1.8.1
+        environment:
+          MIX_ENV: test
+      - image: circleci/postgres:10.1-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: bear_necessities_test
+          POSTGRES_PASSWORD: postgres
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-hex-archive
+            - v1-mix-deps-{{ checksum "mix.lock" }}
+      - run:
+          name: Install node
+          command: |
+            set +e
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+            export NVM_DIR="/root/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+
+            # Each step uses the same `$BASH_ENV`, so need to modify it
+            echo 'export NVM_DIR="/root/.nvm"' >> $BASH_ENV
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+      - run:
+          name: Create local hex archive
+          command: mix local.hex --force
+      - run:
+          name: Create local rebar
+          command: mix local.rebar --force
+      - run:
+          name: Installing Elixir dependencies
+          command: mix deps.get
+      - run:
+          name: Compile the Phoenix app
+          command: mix compile
+      - run:
+          name: Installing yarn
+          command: npm install yarn
+      - run:
+          name: Phoenix digest
+          command: mix phx.digest
+      - run:
+          name: Creating Postgres database
+          command: mix ecto.create
+      - run:
+          name: Running Elixir tests
+          command: mix test
+      - save_cache:
+          key: v1-hex-archive
+          paths:
+            - /root/.mix/archives
+      - save_cache:
+          key: v1-mix-deps-{{ checksum "mix.lock" }}
+          paths:
+            - "deps"
+            - "_build"
+      - save_cache:
+          key: v1-yarn-deps-{{ checksum "yarn.lock" }}
+          paths:
+            - "node_modules"
+experimental:
+  notify:
+    branches:
+      only:
+        - master
